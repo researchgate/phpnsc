@@ -1,0 +1,21 @@
+{
+    "vendor" : "rg",
+    "folders" : {
+        "root"    : "/Users/bastian/Checkouts/researchgate/webroot",
+        "include" : ["modules", "core", "models"],
+        "exclude" : ["core/lib"]
+    },
+    "filetypes" : {
+        "include" : [".php"],
+        "exclude" : [".tpl.php", "Functions.php"]
+    },
+    "templateFolders" : {
+        "root"    : "/Users/bastian/Checkouts/researchgate/webroot",
+        "include" : ["modules"],
+        "exclude" : []
+    },
+    "templateFiletypes" : {
+        "include" : [".tpl.php"],
+        "exclude" : []
+    }
+}
