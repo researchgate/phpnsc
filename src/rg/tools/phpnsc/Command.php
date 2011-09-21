@@ -37,7 +37,8 @@ class Command extends Console\Command\Command
             $directoryScanner->excludeFiletype($exclude);
         }
         $files = $directoryScanner->getFiles();
-        $consoleOutput = new ConsoleOutput($output);
+        $outputClass = $config->output->class;
+        $consoleOutput = new $outputClass($output, $config->output->parameter);
         $classScanner = new ClassScanner($filesystem, $config->folders->root, $config->vendor, $consoleOutput);
         $classModifier = new NamespaceDependencyChecker($filesystem, $classScanner, $config->vendor, $config->folders->root, $consoleOutput);
 
@@ -58,7 +59,7 @@ class Command extends Console\Command\Command
         }
         $templateFiles = $templateDirectoryScanner->getFiles();
         
-        //$classModifier->analyze($templateFiles);
+        $classModifier->analyze($templateFiles);
         
         $consoleOutput->printAll();
     }

@@ -10,7 +10,7 @@ class ConsoleOutput implements Output {
     private $output;
     private $errors = array();
 
-    public function __construct(OutputInterface $output) {
+    public function __construct(OutputInterface $output, $parameter) {
         $this->output = $output;
     }
     

@@ -17,5 +17,9 @@
     "templateFiletypes" : {
         "include" : [".tpl.php"],
         "exclude" : []
+    },
+    "output" : {
+        "class": "rg\\tools\\phpnsc\\CheckstyleOutput",
+        "parameter": "/Users/bastian/ns.xml"
     }
 }
