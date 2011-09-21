@@ -21,6 +21,9 @@ class Command extends Console\Command\Command
         $config = new Config($filesystem);
         $config->loadConfig($configFile);
         $config = $config->getConfig();
+        
+        $config->folders->root = realpath($config->folders->root);
+        
         $filesystem->setRoot($config->folders->root);
         
         $directoryScanner = new DirectoryScanner($filesystem, $config->folders->root);
@@ -38,6 +41,7 @@ class Command extends Console\Command\Command
         }
         $files = $directoryScanner->getFiles();
         $outputClass = $config->output->class;
+        
         $consoleOutput = new $outputClass($output, $config->output->parameter);
         $classScanner = new ClassScanner($filesystem, $config->folders->root, $config->vendor, $consoleOutput);
         $classModifier = new NamespaceDependencyChecker($filesystem, $classScanner, $config->vendor, $config->folders->root, $consoleOutput);
