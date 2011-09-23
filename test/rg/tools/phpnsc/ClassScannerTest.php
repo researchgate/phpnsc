@@ -17,9 +17,10 @@ class ClassScannerTest extends PHPUnit_Framework_TestCase
     protected function setUp() {
         parent::setUp();
         $output = new Symfony\Component\Console\Output\NullOutput();
+        $outputClass = new rg\tools\phpnsc\ConsoleOutput($output);
         $this->filesystem = new ClassScannerFilesystemMock('/root/folder');
         $this->classScanner = new rg\tools\phpnsc\ClassScanner($this->filesystem, '/root/folder', 
-                'vendor', $output);
+                'vendor', $outputClass);
     }
     
     public function testParseDefinedEntities() {
@@ -50,20 +51,16 @@ interface InterfaceOne
         
         $expectedEntities = array(
             'ClassOne' => array(
-                'file' => '/root/folder/namespace/ClassOne.php',
-                'namespace' => 'vendor\namespace',
+                'namespaces' => array('vendor\namespace'),
             ),
             'ClassTwo' => array(
-                'file' => '/root/folder/namespace/ClassTwo.php',
-                'namespace' => 'vendor\namespace',
+                'namespaces' => array('vendor\namespace'),
             ),
             'InterfaceOne' => array(
-                'file' => '/root/folder/namespace/InterfaceOne.php',
-                'namespace' => 'vendor\namespace',
+                'namespaces' => array('vendor\namespace'),
             ),
             'InterfaceTwo' => array(
-                'file' => '/root/folder/namespace/ClassTwo.php',
-                'namespace' => 'vendor\namespace',
+                'namespaces' => array('vendor\namespace'),
             ),
         );
         
@@ -71,8 +68,6 @@ interface InterfaceOne
     }
     
     public function testParseDefinedEntitiesWithDoubleEntityRaisesException() {
-        $this->setExpectedException('Exception', 
-                'double entity nameClassOne in file /root/folder/namespace/ClassTwo.php. Already defined in /root/folder/namespace/ClassOne.php');
         $this->filesystem->filesystem = array(
 '/root/folder/namespace/ClassOne.php' => '
 <?php
@@ -83,7 +78,7 @@ foo class Bar
 class %%^daga
 
 ',
-'/root/folder/namespace/ClassTwo.php' => '
+'/root/folder/namespaceTwo/ClassOne.php' => '
 <?php
 abstract    class      ClassOne
 
@@ -93,6 +88,17 @@ interface   InterfaceTwo
         $files = array_keys($this->filesystem->filesystem);
         
         $this->classScanner->parseFilesForClassesAndInterfaces($files);
+        
+        $expectedEntities = array(
+            'ClassOne' => array(
+                'namespaces' => array('vendor\namespace', 'vendor\namespaceTwo'),
+            ),
+            'InterfaceTwo' => array(
+                'namespaces' => array('vendor\namespaceTwo'),
+            ),
+        );
+        
+        $this->assertEquals($expectedEntities, $this->classScanner->getDefinedEntities());
     }
     
     public function testParseUsedEntities() {
@@ -119,11 +125,11 @@ interface   InterfaceTwo
         
         $expectedEntities = array(
             '/root/folder/namespace/ClassOne.php' => array(
-                'Foo', 'Bar',
+                'Foo' => array(3), 'Bar' => array(3),
             ),
             '/root/folder/namespace/ClassTwo.php' => array(
-                'ClassOne', 'ClassTwo', 'ClassThree', 'OutOfNamespace', 'TypeHintClass', 
-                'OtherNamespace', 'Bar',
+                'ClassOne' => array(5), 'ClassTwo' => array(6,9), 'ClassThree' => array(5), 'OutOfNamespace' => array(9), 'TypeHintClass' => array(5), 
+                'OtherNamespace' => array(9), 'Bar' => array(3),
             ),
         );
         

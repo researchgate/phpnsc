@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of phpnsc.
+ *
+ * (c) Bastian Hofmann <bastian.hofmann@researchgate.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace rg\tools\phpnsc;
 
 class ClassScanner {
@@ -153,11 +161,13 @@ class ClassScanner {
         $matches = array();
         preg_match_all($regex, $fileContent, $matches, PREG_OFFSET_CAPTURE);
         $checkAndAddMatch = function($match, $line) use(&$targetArray, $file, $reservedKeywords) {
-            if (! isset($targetArray[$file][$match])) {
-                $targetArray[$file][$match] = array();
-            }
             if (! in_array(strtolower($match), $reservedKeywords)) {
-                $targetArray[$file][$match][] = $line;
+                if (! isset($targetArray[$file][$match])) {
+                    $targetArray[$file][$match] = array();
+                }
+                if (! in_array($line, $targetArray[$file][$match])) {
+                    $targetArray[$file][$match][] = $line;
+                }
             }
         };
 

@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of phpnsc.
+ *
+ * (c) Bastian Hofmann <bastian.hofmann@researchgate.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace rg\tools\phpnsc;
 
 use Symfony\Component\Console\Output\OutputInterface;
@@ -10,7 +18,7 @@ class ConsoleOutput implements Output {
     private $output;
     private $errors = array();
 
-    public function __construct(OutputInterface $output, $parameter) {
+    public function __construct(OutputInterface $output, $parameter = null) {
         $this->output = $output;
     }
     

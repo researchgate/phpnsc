@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of phpnsc.
+ *
+ * (c) Bastian Hofmann <bastian.hofmann@researchgate.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 namespace rg\tools\phpnsc;
 
 class NamespaceDependencyChecker {
@@ -119,7 +127,7 @@ class NamespaceDependencyChecker {
                     }
                 }
                 if (! $foundMatchingUseStatement) {
-                    $this->addMultipleErrors('Class ' . $usedEntity . ' (fully qualified:' . $usedEntityNamespace . '\\' . $simpleName . ') was referenced relatively but has no matching use statement', $file, $lines);
+                    $this->addMultipleErrors('Class ' . $usedEntity . ' (fully qualified: ' . $usedEntityNamespace . '\\' . $simpleName . ') was referenced relatively but has no matching use statement', $file, $lines);
                 }
             } else {
                 $foundMatchingUseStatement = false;

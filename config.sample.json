@@ -1,25 +1,19 @@
 {
-    "vendor" : "rg",
+    "vendor" : "vendorNamespace",
     "folders" : {
-        "root"    : "/Users/bastian/Checkouts/researchgate/webroot",
-        "include" : ["modules", "core", "models"],
-        "exclude" : ["core/lib"]
+        "root"    : "path/to/sources",
+        "include" : ["subpackage", "subpackage_two"],
+        "exclude" : ["subpackage/excluded"]
     },
     "filetypes" : {
         "include" : [".php"],
-        "exclude" : [".tpl.php", "Functions.php"]
+        "exclude" : [".config.php"]
     },
-    "templateFolders" : {
-        "root"    : "/Users/bastian/Checkouts/researchgate/webroot",
-        "include" : ["modules"],
-        "exclude" : []
-    },
-    "templateFiletypes" : {
-        "include" : [".tpl.php"],
-        "exclude" : []
-    },
-    "output" : {
+    "output" : [{
         "class": "rg\\tools\\phpnsc\\CheckstyleOutput",
-        "parameter": "/Users/bastian/ns.xml"
-    }
+        "parameter": "build/logs/phpnsc.xml"
+    },{
+        "class": "rg\\tools\\phpnsc\\ConsoleOutput",
+        "parameter": ""
+    }]
 }

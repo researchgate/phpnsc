@@ -1,10 +1,18 @@
 #!/usr/bin/php
 <?php
+/*
+ * This file is part of phpnsc.
+ *
+ * (c) Bastian Hofmann <bastian.hofmann@researchgate.net>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 require_once __DIR__.'/src/autoload.php';
 
 use Symfony\Component\Console as Console;
 
-$application = new Console\Application('phpnsc', '1.0.0');
+$application = new Console\Application('phpnsc', '0.0.1');
 $application->add(new rg\tools\phpnsc\Command('run'));
 $application->run();
