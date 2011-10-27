@@ -66,7 +66,7 @@ class ClassScanner {
     private function cleanContent($fileContent) {
         $fileContent = str_replace('\\\'', '  ', $fileContent);
         $fileContent = str_replace('\\"', '  ', $fileContent);
-        
+        $fileContent = preg_replace("/([a-zA-Z])\'([a-zA-Z])/", '$1$2', $fileContent);
         $cleanWithWhitespaces = function($pattern, $fileContent) {
             $getWhitespaces = function($count) {
                 $s = '';
