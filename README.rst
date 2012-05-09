@@ -10,6 +10,11 @@ It prints an error, if a class was used with it's simple or relative name but is
 - or not in the corresponding sub namespace
 - or does not have a corresponding use statement
 
+.. image:: https://secure.travis-ci.org/researchgate/phpnsc.png
+   :alt: Build Status
+
+`Build Status <http://travis-ci.org/researchgate/phpnsc>`_
+
 Usage
 -----
 
