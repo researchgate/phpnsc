@@ -11,7 +11,7 @@ namespace rg\tools\phpnsc;
 
 class NamespaceDependencyChecker {
     /**
-     * @var FilesysyemAccess
+     * @var FilesystemAccess
      */
     private $filesystem;
     /**
@@ -19,17 +19,16 @@ class NamespaceDependencyChecker {
      * @var ClassScanner
      */
     private $classScanner;
-    private $fileModifiers;
     private $root;
     private $namespaceVendor;
     private $definedEntities;
-    
+
     /**
      *
      * @var Output
      */
     private $output;
-    
+
     /**
      * @param FilesystemAccess $filesystem
      * @param ClassScanner $classScanner
@@ -37,7 +36,7 @@ class NamespaceDependencyChecker {
      * @param string $root
      * @param Output $output
      */
-    public function __construct(FilesystemAccess $filesystem, ClassScanner $classScanner, $namespaceVendor, $root, 
+    public function __construct(FilesystemAccess $filesystem, ClassScanner $classScanner, $namespaceVendor, $root,
             Output $output) {
         $this->filesystem = $filesystem;
         $this->classScanner = $classScanner;
@@ -45,10 +44,10 @@ class NamespaceDependencyChecker {
         $this->namespaceVendor = $namespaceVendor;
         $this->output = $output;
     }
-    
+
     /**
      *
-     * @param array $files 
+     * @param array $files
      */
     public function analyze(array $files) {
         $this->output->writeln('Got ' . count($files) . ' files');
@@ -63,7 +62,7 @@ class NamespaceDependencyChecker {
             $progressbar->step();
         }
     }
-    
+
     /**
      *
      * @param string $file full path to file
@@ -105,7 +104,6 @@ class NamespaceDependencyChecker {
                         }
                     }
                     if ($aliasName) {
-                        
                         $parts = explode('\\', $usedEntityNamespace);
                         $usedEntityNamespaceT = '';
                         foreach ($parts as $part) {
@@ -131,21 +129,21 @@ class NamespaceDependencyChecker {
                 }
             } else {
                 $foundMatchingUseStatement = false;
-                
+
                 if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
                     $foundMatchingUseStatement = true;
-                } 
+                }
                 if (preg_match('/\Wuse\s+[a-zA-Z\\\]+\\\\' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
                     $foundMatchingUseStatement = true;
-                } 
-                
+                }
+
                 if (! $foundMatchingUseStatement) {
                     $this->addMultipleErrors('Class ' . $usedEntity . ' was referenced relatively but not defined', $file, $lines);
                 }
             }
         }
     }
-    
+
     private function addMultipleErrors($description, $file, array $lines) {
         foreach ($lines as $line) {
             $this->output->addError($description, $file, $line);

@@ -11,7 +11,7 @@ namespace rg\tools\phpnsc;
 
 class ClassScanner {
     /**
-     * @var FilesysyemAccess
+     * @var FilesystemAccess
      */
     private $filesystem;
     private $definedEntities;
@@ -42,8 +42,8 @@ class ClassScanner {
     /**
      * parses all given files for classes and interfaces that are defined or used in this
      * files
-     * 
-     * @param array $files 
+     *
+     * @param array $files
      */
     public function parseFilesForClassesAndInterfaces($files) {
         $progressbar = new Progressbar($this->output, count($files));
@@ -60,7 +60,7 @@ class ClassScanner {
 
     /**
      *
-     * @param string $fileContent 
+     * @param string $fileContent
      * @return string
      */
     private function cleanContent($fileContent) {
@@ -81,7 +81,7 @@ class ClassScanner {
                 foreach ($matches[1] as $match) {
                     $fileContent =
                         substr($fileContent, 0, $match[1]) .
-                        $getWhitespaces(strlen($match[0])) . 
+                        $getWhitespaces(strlen($match[0])) .
                         substr($fileContent, $match[1] + strlen($match[0]));
                 }
             }
@@ -93,7 +93,7 @@ class ClassScanner {
         $fileContent = $cleanWithWhitespaces("/(\'.*\')/sU", $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\".*\")/sU", $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\/\/.*)/", $fileContent);
-        
+
         if (false) {
             $fileContent = preg_replace("/(\/\*.*\*\/)/sU", '', $fileContent);
             $fileContent = preg_replace("/(\?>.*<\?)/sU", "", $fileContent);
@@ -201,7 +201,7 @@ class ClassScanner {
 
     public function parseUseStatements($file, $namespace, $fileContent, $originalFileContent) {
         // TODO analyze use x as y;
-        // TODO analyye use concatenation
+        // TODO analyze use concatenation
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\Wuse\s([a-zA-Z0-9_\\\]+)\W/i', $this->useStatements);
     }
 
