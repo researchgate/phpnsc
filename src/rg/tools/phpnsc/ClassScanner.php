@@ -87,6 +87,7 @@ class ClassScanner {
             }
             return $fileContent;
         };
+        $fileContent = str_replace('*/*', '', $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\/\*.*\*\/)/sU", $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\?>.*<\?)/sU", $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\?>.*$)/sU", $fileContent);
