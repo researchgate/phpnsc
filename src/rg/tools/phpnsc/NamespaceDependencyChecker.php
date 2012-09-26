@@ -119,13 +119,21 @@ class NamespaceDependencyChecker {
                         if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntityNamespaceT) . ';/', $fileContent)) {
                             $foundMatchingUseStatement = true;
                         }
-                        if (preg_match('/\Wuse\s+\\\?[a-zA-Z\\\]+\sas\s' . $aliasName . ';/', $fileContent)) {
+                        if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s' . $aliasName . ';/', $fileContent)) {
                             $foundMatchingUseStatement = true;
                         }
                     }
                 }
                 if (! $foundMatchingUseStatement) {
-                    $this->addMultipleErrors('Class ' . $usedEntity . ' (fully qualified: ' . $usedEntityNamespace . '\\' . $simpleName . ') was referenced relatively but has no matching use statement', $file, $lines);
+                    if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
+                        $foundMatchingUseStatement = true;
+                    }
+                    if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
+                        $foundMatchingUseStatement = true;
+                    }
+                    if (!$foundMatchingUseStatement) {
+                        $this->addMultipleErrors('Class ' . $usedEntity . ' (fully qualified: ' . $usedEntityNamespace . '\\' . $simpleName . ') was referenced relatively but has no matching use statement', $file, $lines);
+                    }
                 }
             } else {
                 $foundMatchingUseStatement = false;
@@ -133,7 +141,7 @@ class NamespaceDependencyChecker {
                 if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
                     $foundMatchingUseStatement = true;
                 }
-                if (preg_match('/\Wuse\s+[a-zA-Z\\\]+\\\\' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
+                if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
                     $foundMatchingUseStatement = true;
                 }
 

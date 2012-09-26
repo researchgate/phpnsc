@@ -102,7 +102,7 @@ class DirectoryScanner {
                 } 
             } 
             $this->filesystem->closeDirectory($handle); 
-        } 
+        }
 
         return $this->array_flat($files);  
     }
