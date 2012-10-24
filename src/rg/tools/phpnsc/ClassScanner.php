@@ -139,7 +139,7 @@ class ClassScanner {
 
     public function parseUsedEntities($file, $namespace, $fileContent, $originalFileContent) {
         $reservedClassKeywords = array(
-            'parent', 'self', '__class__', 'static', 'array', 'new'
+            'parent', 'self', '__class__', 'static', 'array', 'new', 'clone'
         );
         // new operator
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\Wnew\s+([a-zA-Z0-9_\\\]+)/i', $this->usedEntities, $reservedClassKeywords);
