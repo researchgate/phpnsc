@@ -34,6 +34,15 @@ foo class Bar
 class %%^daga
 
 ',
+'/root/folder/namespace/FinalClass.php' => '
+<?php
+final class FinalClass extends Foo
+
+foo class Bar
+
+class %%^daga
+
+',
 '/root/folder/namespace/ClassTwo.php' => '
 <?php
 abstract    class      ClassTwo
@@ -51,6 +60,9 @@ interface InterfaceOne
         
         $expectedEntities = array(
             'ClassOne' => array(
+                'namespaces' => array('vendor\namespace'),
+            ),
+            'FinalClass' => array(
                 'namespaces' => array('vendor\namespace'),
             ),
             'ClassTwo' => array(

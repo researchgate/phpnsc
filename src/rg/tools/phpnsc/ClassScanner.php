@@ -196,7 +196,7 @@ class ClassScanner {
     }
 
     public function parseDefinedEntities($file, $namespace, $fileContent, $originalFileContent) {
-        $this->parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, '/^\s*(abstract\s+)?class\s+([a-zA-Z0-9_]+)\W/mi', $this->definedEntities, 2);
+        $this->parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, '/^\s*(abstract\s+|final\s+)?class\s+([a-zA-Z0-9_]+)\W/mi', $this->definedEntities, 2);
         $this->parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, '/^\s*interface\s+([a-zA-Z0-9_]+)\W/mi', $this->definedEntities);
     }
 
