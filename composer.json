@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "symfony/console" : "2.3.*",
+        "symfony/console" : "2.*",
         "nikic/php-parser" : "0.9.*"
     },
     "require-dev" : {
