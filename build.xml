@@ -9,7 +9,7 @@
  </target> 
  
  <target name="phpunit" description="Run unit tests using PHPUnit and generates junit.xml">
-   <exec executable="phpunit" failonerror="true">
+   <exec executable="${basedir}/vendor/bin/phpunit" failonerror="true">
      <arg line="-c phpunit.xml" />
    </exec>
  </target> 
