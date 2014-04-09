@@ -80,8 +80,7 @@ class NamespaceDependencyChecker {
             if (substr($usedEntity, 0, 1) === '$') {
                 continue;
             }
-            $simpleName = $usedEntity;
-            $aliasName = '';
+            $simpleName = $aliasName = $usedEntity;
             if (strpos($usedEntity, '\\') > 0 ) {
                 $parts = explode('\\', $usedEntity);
                 $simpleName = $parts[count($parts) - 1];
@@ -103,25 +102,24 @@ class NamespaceDependencyChecker {
                             $foundMatchingUseStatement = true;
                         }
                     }
-                    if ($aliasName) {
-                        $parts = explode('\\', $usedEntityNamespace);
-                        $usedEntityNamespaceT = '';
-                        foreach ($parts as $part) {
-                            if ($part === $aliasName) {
-                                break;
-                            }
-                            $usedEntityNamespaceT .= $part . '\\';
+
+                    $parts = explode('\\', $usedEntityNamespace);
+                    $usedEntityNamespaceT = '';
+                    foreach ($parts as $part) {
+                        if ($part === $aliasName) {
+                            break;
                         }
-                        if ($usedEntityNamespaceT === $fileNamespace . '\\') {
-                            $foundMatchingUseStatement = true;
-                        }
-                        $usedEntityNamespaceT .= $aliasName;
-                        if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntityNamespaceT) . ';/', $fileContent)) {
-                            $foundMatchingUseStatement = true;
-                        }
-                        if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s' . $aliasName . ';/', $fileContent)) {
-                            $foundMatchingUseStatement = true;
-                        }
+                        $usedEntityNamespaceT .= $part . '\\';
+                    }
+                    if ($usedEntityNamespaceT === $fileNamespace . '\\') {
+                        $foundMatchingUseStatement = true;
+                    }
+                    $usedEntityNamespaceT .= $aliasName;
+                    if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntityNamespaceT) . ';/', $fileContent)) {
+                        $foundMatchingUseStatement = true;
+                    }
+                    if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s' . $aliasName . ';/', $fileContent)) {
+                        $foundMatchingUseStatement = true;
                     }
                 }
                 if (! $foundMatchingUseStatement) {
@@ -145,6 +143,10 @@ class NamespaceDependencyChecker {
                     $foundMatchingUseStatement = true;
                 }
 
+                if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s' . $aliasName . ';/', $fileContent)) {
+                    $foundMatchingUseStatement = true;
+                }
+
                 if (! $foundMatchingUseStatement) {
                     $this->addMultipleErrors('Class ' . $usedEntity . ' was referenced relatively but not defined', $file, $lines);
                 }
@@ -159,4 +161,3 @@ class NamespaceDependencyChecker {
     }
 
 }
-
