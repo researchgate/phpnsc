@@ -87,19 +87,18 @@ class NamespaceDependencyChecker {
                 $aliasName = $parts[0];
             }
             if (isset($this->definedEntities[$simpleName])) {
-                $foundMatchingUseStatement = false;
                 foreach ($this->definedEntities[$simpleName]['namespaces'] as $usedEntityNamespace ) {
                     if ($usedEntityNamespace === $fileNamespace) {
-                        $foundMatchingUseStatement = true;
+                        continue 2;
                     }
                     $usedEntityNamespaceT = $usedEntityNamespace . '\\' . $simpleName;
                     if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntityNamespaceT) . ';/', $fileContent)) {
-                        $foundMatchingUseStatement = true;
+                        continue 2;
                     }
                     if (strpos($usedEntityNamespaceT, $fileNamespace) === 0) {
                         $usedEntityNamespaceT = substr($usedEntityNamespaceT, strlen($fileNamespace) + 1);
                         if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntityNamespaceT) . ';/', $fileContent)) {
-                            $foundMatchingUseStatement = true;
+                            continue 2;
                         }
                     }
 
@@ -112,44 +111,37 @@ class NamespaceDependencyChecker {
                         $usedEntityNamespaceT .= $part . '\\';
                     }
                     if ($usedEntityNamespaceT === $fileNamespace . '\\') {
-                        $foundMatchingUseStatement = true;
+                        continue 2;
                     }
                     $usedEntityNamespaceT .= $aliasName;
                     if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntityNamespaceT) . ';/', $fileContent)) {
-                        $foundMatchingUseStatement = true;
+                        continue 2;
                     }
                     if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s' . $aliasName . ';/', $fileContent)) {
-                        $foundMatchingUseStatement = true;
+                        continue 2;
                     }
                 }
-                if (! $foundMatchingUseStatement) {
-                    if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
-                        $foundMatchingUseStatement = true;
-                    }
-                    if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
-                        $foundMatchingUseStatement = true;
-                    }
-                    if (!$foundMatchingUseStatement) {
-                        $this->addMultipleErrors('Class ' . $usedEntity . ' (fully qualified: ' . $usedEntityNamespace . '\\' . $simpleName . ') was referenced relatively but has no matching use statement', $file, $lines);
-                    }
-                }
-            } else {
-                $foundMatchingUseStatement = false;
-
                 if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
-                    $foundMatchingUseStatement = true;
+                    continue;
                 }
                 if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
-                    $foundMatchingUseStatement = true;
+                    continue;
+                }
+
+                $this->addMultipleErrors('Class ' . $usedEntity . ' (fully qualified: ' . $usedEntityNamespace . '\\' . $simpleName . ') was referenced relatively but has no matching use statement', $file, $lines);
+            } else {
+                if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
+                    continue;
+                }
+                if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
+                    continue;
                 }
 
                 if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s' . $aliasName . ';/', $fileContent)) {
-                    $foundMatchingUseStatement = true;
+                    continue;
                 }
 
-                if (! $foundMatchingUseStatement) {
-                    $this->addMultipleErrors('Class ' . $usedEntity . ' was referenced relatively but not defined', $file, $lines);
-                }
+                $this->addMultipleErrors('Class ' . $usedEntity . ' was referenced relatively but not defined', $file, $lines);
             }
         }
     }
