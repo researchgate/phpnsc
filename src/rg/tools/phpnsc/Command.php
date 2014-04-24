@@ -15,7 +15,7 @@ class Command extends Console\Command\Command
 {
     public function __construct($name = null) {
         parent::__construct($name);
-        
+
         $this->setDescription('run the script');
         $this->setHelp('phpnsc run config_file.json');
         $this->addArgument('config', Console\Input\InputOption::VALUE_REQUIRED, 'path to config file. see README.rst for details');
@@ -29,11 +29,11 @@ class Command extends Console\Command\Command
         $config = new Config($filesystem);
         $config->loadConfig($configFile);
         $config = $config->getConfig();
-        
+
         $config->folders->root = realpath($config->folders->root);
-        
+
         $filesystem->setRoot($config->folders->root);
-        
+
         $directoryScanner = new DirectoryScanner($filesystem, $config->folders->root);
         foreach($config->folders->include as $include) {
             $directoryScanner->includeDirectory($include);
@@ -48,17 +48,19 @@ class Command extends Console\Command\Command
             $directoryScanner->excludeFiletype($exclude);
         }
         $files = $directoryScanner->getFiles();
-        
+
         $outputClass = new ChainedOutput($output);
         foreach ($config->output as $outputConfiguration) {
             $outputClass->addOutputClass($outputConfiguration->class, $outputConfiguration->parameter);
         }
-        
+
         $classScanner = new ClassScanner($filesystem, $config->folders->root, $config->vendor, $outputClass);
         $classModifier = new NamespaceDependencyChecker($filesystem, $classScanner, $config->vendor, $config->folders->root, $outputClass);
 
         $classModifier->analyze($files);
 
         $outputClass->printAll();
+
+        $outputClass->writeln(\PHP_Timer::resourceUsage());
     }
 }
