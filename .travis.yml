@@ -8,4 +8,8 @@ php:
   - hhvm
 
 install:
-  - composer install
+  - composer --prefer-source --dev install
+
+matrix:
+    allow_failures:
+        - php: hhvm
