@@ -2,6 +2,9 @@
 phpnsc
 ======
 
+.. image:: https://travis-ci.org/researchgate/phpnsc.svg?branch=master
+    :target: https://travis-ci.org/researchgate/phpnsc
+
 The PHP namespace checker, checks all files in a project for invalid class references.
 
 It prints an error, if a class was used with it's simple or relative name but is:
@@ -9,11 +12,6 @@ It prints an error, if a class was used with it's simple or relative name but is
 - not in the same namespace
 - or not in the corresponding sub namespace
 - or does not have a corresponding use statement
-
-.. image:: https://secure.travis-ci.org/researchgate/phpnsc.png
-   :alt: Build Status
-
-`Build Status <http://travis-ci.org/researchgate/phpnsc>`_
 
 Usage
 -----
