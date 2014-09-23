@@ -10,7 +10,7 @@
     ],
     "require": {
         "symfony/console" : "~2.1",
-        "nikic/php-parser" : "~0.9",
+        "nikic/php-parser" : "~1.0",
         "phpunit/php-timer": "~1.0"
     },
     "require-dev" : {
