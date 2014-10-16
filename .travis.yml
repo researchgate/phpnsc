@@ -8,4 +8,4 @@ php:
   - hhvm
 
 install:
-  - composer --prefer-source --dev install
+  - composer --prefer-source install
