@@ -9,6 +9,8 @@
  */
 namespace rg\tools\phpnsc;
 
+use PhpParser\Node\Stmt\Namespace_;
+
 class ClassScanner {
     /**
      * @var FilesystemAccess
@@ -46,10 +48,29 @@ class ClassScanner {
      * @param array $files
      */
     public function parseFilesForClassesAndInterfaces($files) {
+        $parser = new \PhpParser\Parser(new \PhpParser\Lexer);
+
         $progressbar = new Progressbar($this->output, count($files));
         foreach ($files as $file) {
             $namespace = (string)new NamespaceString($this->namespaceVendor, $this->root, $file);
             $originalFileContent = $this->filesystem->getFile($file);
+
+            try {
+                $stmts = $parser->parse($originalFileContent);
+                $firstStatement = $stmts[0];
+                if ($firstStatement instanceof Namespace_) {
+                    $namespaceOfFile = implode('\\', $firstStatement->name->parts);
+                    if ($namespace !== $namespaceOfFile) {
+                        $this->output->addError('Namespace does not match folder structure, got ' . $namespaceOfFile . ' expected ' . $namespace, $file, $firstStatement->getLine());
+                    }
+                }
+            } catch (\PhpParser\Error $e) {
+                $this->output->addError(
+                    'Parse Error: ' . $e->getMessage(),
+                    $file,
+                    1
+                );
+            }
             $fileContent = $this->cleanContent($originalFileContent);
             $this->parseDefinedEntities($file, $namespace, $fileContent, $originalFileContent);
             $this->parseUsedEntities($file, $namespace, $fileContent, $originalFileContent);
