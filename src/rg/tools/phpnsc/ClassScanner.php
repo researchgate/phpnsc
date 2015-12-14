@@ -115,7 +115,7 @@ class ClassScanner {
         $fileContent = $cleanWithWhitespaces("/(\'.*\')/sU", $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\".*\")/sU", $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\/\/.*)/", $fileContent);
-        $fileContent = $cleanWithWhitespaces("/(<<<(?P<tag>[A-Za-z_]+).*\g<tag>;)/sU", $fileContent);
+        $fileContent = $cleanWithWhitespaces("/(<<<(?<tag>[A-Za-z_]+).*\k<tag>;)/sU", $fileContent);
 
         if (false) {
             $fileContent = preg_replace("/(\/\*.*\*\/)/sU", '', $fileContent);
