@@ -88,14 +88,15 @@ class ClassScanner {
         $fileContent = str_replace('\\\'', '  ', $fileContent);
         $fileContent = str_replace('\\"', '  ', $fileContent);
         $fileContent = preg_replace("/([a-zA-Z])\'([a-zA-Z])/", '$1$2', $fileContent);
-        $cleanWithWhitespaces = function($pattern, $fileContent) {
-            $getWhitespaces = function($count) {
-                $s = '';
-                for ($i = 0; $i < $count; $i++) {
-                    $s .= ' ';
-                }
-                return $s;
-            };
+        $getWhitespaces = function ($count) {
+            $s = '';
+            for ($i = 0; $i < $count; $i++) {
+                $s .= ' ';
+            }
+            return $s;
+        };
+
+        $cleanWithWhitespaces = function($pattern, $fileContent) use ($getWhitespaces) {
             $matches = array();
             preg_match_all($pattern, $fileContent, $matches, PREG_OFFSET_CAPTURE);
             if (isset($matches[1])) {
@@ -115,7 +116,8 @@ class ClassScanner {
         $fileContent = $cleanWithWhitespaces("/(\'.*\')/sU", $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\".*\")/sU", $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\/\/.*)/", $fileContent);
-        $fileContent = $cleanWithWhitespaces("/(<<<(?<tag>[A-Za-z_]+).*\k<tag>;)/sU", $fileContent);
+        $fileContent = $cleanWithWhitespaces("/(<<<(?P<tag>_[A-Za-z]+).*(?P=tag);)/sU", $fileContent);
+        $fileContent = $cleanWithWhitespaces("/(<<<(?P<tag>[A-Za-z_]+).*(?P=tag);)/sU", $fileContent);
 
         if (false) {
             $fileContent = preg_replace("/(\/\*.*\*\/)/sU", '', $fileContent);
