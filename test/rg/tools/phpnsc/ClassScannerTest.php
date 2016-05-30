@@ -185,9 +185,10 @@ _TEXT;
  $foo = new ClassOne(ClassThree::CONSTANT, TypeHintClass  $variable);
 $bar = new ClassTwo;
 $foo = new __CLASS__;
-$xyz = new $variable(NotClassCONSTANT, parent::FOO, self::FOO, static::FOO, array $bar);
+$xyz = new $variable(NotClassCONSTANT, parent::FOO, self::FOO, static::FOO, array $bar, string $blub, int $bat, $float $baz, callable $bar);
 $b = new ClassTwo(ClassTwo::CONSTANT, OutOfNamespace $foo, OtherNamespace $bar, OutOfNamespace::FOO);
 interface   InterfaceTwo
+function foo(ClassFour $bar) : ClassFive {}
 ',
         ];
         $files = array_keys($this->filesystem->filesystem);
@@ -207,6 +208,8 @@ interface   InterfaceTwo
                 'TypeHintClass' => [8],
                 'OtherNamespace' => [12],
                 'Bar' => [3],
+                'ClassFour' => [14],
+                'ClassFive' => [14],
             ],
         ];
 

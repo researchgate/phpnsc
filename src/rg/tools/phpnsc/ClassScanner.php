@@ -163,7 +163,9 @@ class ClassScanner {
 
     public function parseUsedEntities($file, $namespace, $fileContent, $originalFileContent) {
         $reservedClassKeywords = array(
-            'parent', 'self', '__class__', 'static', 'array', 'new', 'clone', 'callable'
+            'parent', 'self', '__class__', 'static', 'array', 'new', 'clone',
+            'callable', 'string', 'int', 'float', 'bool', 'resource', 'false', 'true',
+            'null', 'numeric', 'mixed', 'object'
         );
         // new operator
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\Wnew\s+([a-zA-Z0-9_\\\]+)/i', $this->usedEntities, $reservedClassKeywords);
@@ -173,6 +175,18 @@ class ClassScanner {
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\W([\$a-zA-Z0-9_\\\]+)::/i', $this->usedEntities, $reservedClassKeywords);
         // Typehints
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/[\,\(]\s*([a-zA-Z0-9_\\\]+)\s+\$[a-zA-Z0-9_]+/i', $this->usedEntities, $reservedClassKeywords);
+
+        // Return Typehints
+        $this->parseFileWithRegexForUsedEntities(
+            $file,
+            $namespace,
+            $fileContent,
+            $originalFileContent,
+            '/\)\s*:\s*([a-zA-Z0-9_\\\]+)\s*\{/i',
+            $this->usedEntities,
+            $reservedClassKeywords
+        );
+
         // implements
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\simplements\s+([\s,a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, array(), 1, ',');
         // Instanceof
