@@ -43,6 +43,7 @@ class NamespaceDependencyChecker {
         $this->root = $root;
         $this->namespaceVendor = $namespaceVendor;
         $this->output = $output;
+        $this->foundError = false;
     }
 
     /**
@@ -147,6 +148,7 @@ class NamespaceDependencyChecker {
     }
 
     private function addMultipleErrors($description, $file, array $lines) {
+        $this->foundError = true;
         foreach ($lines as $line) {
             $this->output->addError($description, $file, $line);
         }

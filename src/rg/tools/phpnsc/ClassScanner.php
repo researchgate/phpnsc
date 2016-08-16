@@ -39,6 +39,7 @@ class ClassScanner {
         $this->root = $root;
         $this->namespaceVendor = $namespaceVendor;
         $this->output = $output;
+        $this->foundError = false;
     }
 
     /**
@@ -61,10 +62,12 @@ class ClassScanner {
                 if ($firstStatement instanceof Namespace_) {
                     $namespaceOfFile = implode('\\', $firstStatement->name->parts);
                     if ($namespace !== $namespaceOfFile) {
+                        $this->foundError = true;
                         $this->output->addError('Namespace does not match folder structure, got ' . $namespaceOfFile . ' expected ' . $namespace, $file, $firstStatement->getLine());
                     }
                 }
             } catch (\PhpParser\Error $e) {
+                $this->foundError = true;
                 $this->output->addError(
                     'Parse Error: ' . $e->getMessage(),
                     $file,

@@ -62,5 +62,11 @@ class Command extends Console\Command\Command
         $outputClass->printAll();
 
         $outputClass->writeln(\PHP_Timer::resourceUsage());
+
+        if ($classScanner->foundError || $classModifier->foundError) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }
