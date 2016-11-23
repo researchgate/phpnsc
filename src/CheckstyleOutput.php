@@ -38,7 +38,7 @@ class CheckstyleOutput implements Output {
         $this->output = $output;
         $this->file = $parameter;
         if (!$this->file) {
-            throw new \LogicException("\\rg\\tools\\phpnsc\\CheckstyleOutput needs parameter to be set to the destination filename.")
+            throw new \LogicException("\\rg\\tools\\phpnsc\\CheckstyleOutput needs parameter to be set to the destination filename.");
         }
     }
 
