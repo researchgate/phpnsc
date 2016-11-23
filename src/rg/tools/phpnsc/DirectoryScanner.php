@@ -7,11 +7,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace rg\tools\phpnsc;
 
-class DirectoryScanner {
+class DirectoryScanner
+{
     /**
-     *
      * @var FilesystemAccess
      */
     private $filesystem;
@@ -24,79 +25,82 @@ class DirectoryScanner {
     private $filetypeExcludes = [];
 
     /**
-     *
      * @param FilesystemAccess $filesystem
-     * @param string $root
+     * @param string           $root
      */
-    public function __construct(FilesystemAccess $filesystem, $root) {
+    public function __construct(FilesystemAccess $filesystem, $root)
+    {
         $this->filesystem = $filesystem;
         $this->root = $root;
     }
 
     /**
-     *
      * @param string $directory
      */
-    public function includeDirectory($directory) {
+    public function includeDirectory($directory)
+    {
         $this->directoryIncludes[] = $directory;
     }
 
     /**
-     *
      * @param string $directory
      */
-    public function excludeDirectory($directory) {
+    public function excludeDirectory($directory)
+    {
         $this->directoryExcludes[] = $directory;
     }
 
     /**
-     *
      * @param string $filetype
      */
-    public function includeFiletype($filetype) {
+    public function includeFiletype($filetype)
+    {
         $this->filetypeIncludes[] = $filetype;
     }
 
     /**
-     *
      * @param string $filetype
      */
-    public function excludeFiletype($filetype) {
+    public function excludeFiletype($filetype)
+    {
         $this->filetypeExcludes[] = $filetype;
     }
 
     /**
-     * get all files that should be analyzed and modified
+     * get all files that should be analyzed and modified.
      *
      * @return array
      */
-    public function getFiles() {
+    public function getFiles()
+    {
         $files = [];
         foreach ($this->directoryIncludes as $directory) {
-            $files = array_merge($files, $this->getFilesFromDir($this->root . DIRECTORY_SEPARATOR . $directory));
+            $files = array_merge($files, $this->getFilesFromDir($this->root.DIRECTORY_SEPARATOR.$directory));
         }
+
         return $files;
     }
 
     /**
      * get all files with included filetypes from given directory and all subdirectories
-     * that are not in a subdirectory from the excluded directory list
+     * that are not in a subdirectory from the excluded directory list.
      *
      * @param string $dir
+     *
      * @return array
      */
-    private function getFilesFromDir($dir) {
+    private function getFilesFromDir($dir)
+    {
         $files = [];
         if ($handle = $this->filesystem->openDirectory($dir)) {
             while (false !== ($file = $this->filesystem->readdir($handle))) {
-                if ($file != "." && $file != "..") {
-                    $fullPath = $dir . DIRECTORY_SEPARATOR . $file;
+                if ($file != '.' && $file != '..') {
+                    $fullPath = $dir.DIRECTORY_SEPARATOR.$file;
                     if ($this->filesystem->isDir($fullPath)) {
                         if (!$this->isDirectoryExcluded($fullPath)) {
                             $files[] = $this->getFilesFromDir($fullPath);
                         }
-                    }
-                    elseif ($this->isFiletypeIncluded($file)) {
+                    } elseif ($this->isFiletypeIncluded($file)) {
                         $files[] = $this->filesystem->realpath($fullPath);
                     }
                 }
@@ -109,12 +113,14 @@ class DirectoryScanner {
 
     /**
      * checks if current filetype is included in the filetype list and not excluded
-     * from it
+     * from it.
      *
      * @param string $file
-     * @return boolean
+     *
+     * @return bool
      */
-    private function isFiletypeIncluded($file) {
+    private function isFiletypeIncluded($file)
+    {
         foreach ($this->filetypeIncludes as $included) {
             if (substr($file, strlen($included) * -1) === $included) {
                 foreach ($this->filetypeExcludes as $excluded) {
@@ -122,40 +128,46 @@ class DirectoryScanner {
                         return false;
                     }
                 }
+
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * checks if given directory is part of the excluded directory list
+     * checks if given directory is part of the excluded directory list.
      *
      * @param string $dir
-     * @return boolean
+     *
+     * @return bool
      */
-    private function isDirectoryExcluded($dir) {
+    private function isDirectoryExcluded($dir)
+    {
         foreach ($this->directoryExcludes as $excluded) {
-            if ($this->filesystem->realpath($this->root . DIRECTORY_SEPARATOR . $excluded) === $this->filesystem->realpath($dir)) {
+            if ($this->filesystem->realpath($this->root.DIRECTORY_SEPARATOR.$excluded) === $this->filesystem->realpath($dir)) {
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * small helper function to flatten a multi dimensional array
+     * small helper function to flatten a multi dimensional array.
      *
      * @param array $array
+     *
      * @return array
      */
-    private function array_flat($array) {
+    private function array_flat($array)
+    {
         $tmp = [];
-        foreach($array as $a) {
+        foreach ($array as $a) {
             if (is_array($a)) {
                 $tmp = array_merge($tmp, $this->array_flat($a));
-            }
-            else {
+            } else {
                 $tmp[] = $a;
             }
         }

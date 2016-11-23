@@ -7,12 +7,13 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace rg\tools\phpnsc;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ConsoleOutput implements Output {
-
+class ConsoleOutput implements Output
+{
     /**
      * @var OutputInterface
      */
@@ -23,19 +24,23 @@ class ConsoleOutput implements Output {
      */
     private $errors = [];
 
-    public function __construct(OutputInterface $output, $parameter = null) {
+    public function __construct(OutputInterface $output, $parameter = null)
+    {
         $this->output = $output;
     }
 
-    public function write($text) {
+    public function write($text)
+    {
         $this->output->write($text);
     }
 
-    public function writeln($text) {
+    public function writeln($text)
+    {
         $this->output->writeln($text);
     }
 
-    public function addError($description, $file, $line) {
+    public function addError($description, $file, $line)
+    {
         $this->errors[] = [
             'description' => $description,
             'file' => $file,
@@ -43,11 +48,11 @@ class ConsoleOutput implements Output {
         ];
     }
 
-    public function printAll() {
-        $this->writeln('Errors found:' . PHP_EOL);
+    public function printAll()
+    {
+        $this->writeln('Errors found:'.PHP_EOL);
         foreach ($this->errors as $error) {
-            $this->writeln($error['file'] . ' (' . $error['line'] . '): ' . $error['description']);
+            $this->writeln($error['file'].' ('.$error['line'].'): '.$error['description']);
         }
     }
 }
-

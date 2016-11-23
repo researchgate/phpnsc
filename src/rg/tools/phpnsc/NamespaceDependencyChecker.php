@@ -7,15 +7,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace rg\tools\phpnsc;
 
-class NamespaceDependencyChecker {
+class NamespaceDependencyChecker
+{
     /**
      * @var FilesystemAccess
      */
     private $filesystem;
     /**
-     *
      * @var ClassScanner
      */
     private $classScanner;
@@ -24,20 +25,20 @@ class NamespaceDependencyChecker {
     private $definedEntities;
 
     /**
-     *
      * @var Output
      */
     private $output;
 
     /**
      * @param FilesystemAccess $filesystem
-     * @param ClassScanner $classScanner
-     * @param string $namespaceVendor
-     * @param string $root
-     * @param Output $output
+     * @param ClassScanner     $classScanner
+     * @param string           $namespaceVendor
+     * @param string           $root
+     * @param Output           $output
      */
     public function __construct(FilesystemAccess $filesystem, ClassScanner $classScanner, $namespaceVendor, $root,
-            Output $output) {
+            Output $output)
+    {
         $this->filesystem = $filesystem;
         $this->classScanner = $classScanner;
         $this->root = $root;
@@ -47,15 +48,15 @@ class NamespaceDependencyChecker {
     }
 
     /**
-     *
      * @param array $files
      */
-    public function analyze(array $files) {
-        $this->output->writeln('Got ' . count($files) . ' files');
+    public function analyze(array $files)
+    {
+        $this->output->writeln('Got '.count($files).' files');
         $this->output->writeln('Collect entities...');
         $this->classScanner->parseFilesForClassesAndInterfaces($files);
         $this->definedEntities = $this->classScanner->getDefinedEntities();
-        $this->output->writeln('Got ' . count($this->definedEntities) . ' defined entities');
+        $this->output->writeln('Got '.count($this->definedEntities).' defined entities');
         $this->output->writeln('Check namespaces...');
         $progressbar = new Progressbar($this->output, count($files));
         foreach ($files as $file) {
@@ -65,10 +66,10 @@ class NamespaceDependencyChecker {
     }
 
     /**
-     *
      * @param string $file full path to file
      */
-    private function analyzeFile($file) {
+    private function analyzeFile($file)
+    {
         $fileContent = $this->filesystem->getFile($file);
         $entitiesUsedInFile = $this->classScanner->getUsedEntities($file);
 
@@ -82,23 +83,23 @@ class NamespaceDependencyChecker {
                 continue;
             }
             $simpleName = $aliasName = $usedEntity;
-            if (strpos($usedEntity, '\\') > 0 ) {
+            if (strpos($usedEntity, '\\') > 0) {
                 $parts = explode('\\', $usedEntity);
                 $simpleName = $parts[count($parts) - 1];
                 $aliasName = $parts[0];
             }
             if (isset($this->definedEntities[$simpleName])) {
-                foreach ($this->definedEntities[$simpleName]['namespaces'] as $usedEntityNamespace ) {
+                foreach ($this->definedEntities[$simpleName]['namespaces'] as $usedEntityNamespace) {
                     if ($usedEntityNamespace === $fileNamespace) {
                         continue 2;
                     }
-                    $usedEntityNamespaceT = $usedEntityNamespace . '\\' . $simpleName;
-                    if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntityNamespaceT) . ';/', $fileContent)) {
+                    $usedEntityNamespaceT = $usedEntityNamespace.'\\'.$simpleName;
+                    if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntityNamespaceT).';/', $fileContent)) {
                         continue 2;
                     }
                     if (strpos($usedEntityNamespaceT, $fileNamespace) === 0) {
                         $usedEntityNamespaceT = substr($usedEntityNamespaceT, strlen($fileNamespace) + 1);
-                        if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntityNamespaceT) . ';/', $fileContent)) {
+                        if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntityNamespaceT).';/', $fileContent)) {
                             continue 2;
                         }
                     }
@@ -109,49 +110,49 @@ class NamespaceDependencyChecker {
                         if ($part === $aliasName) {
                             break;
                         }
-                        $usedEntityNamespaceT .= $part . '\\';
+                        $usedEntityNamespaceT .= $part.'\\';
                     }
-                    if ($usedEntityNamespaceT === $fileNamespace . '\\') {
+                    if ($usedEntityNamespaceT === $fileNamespace.'\\') {
                         continue 2;
                     }
                     $usedEntityNamespaceT .= $aliasName;
-                    if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntityNamespaceT) . ';/', $fileContent)) {
+                    if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntityNamespaceT).';/', $fileContent)) {
                         continue 2;
                     }
-                    if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s' . $aliasName . ';/', $fileContent)) {
+                    if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s'.$aliasName.';/', $fileContent)) {
                         continue 2;
                     }
                 }
-                if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
+                if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
                     continue;
                 }
-                if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
+                if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
                     continue;
                 }
 
-                $this->addMultipleErrors('Class ' . $usedEntity . ' (fully qualified: ' . $usedEntityNamespace . '\\' . $simpleName . ') was referenced relatively but has no matching use statement', $file, $lines);
+                $this->addMultipleErrors('Class '.$usedEntity.' (fully qualified: '.$usedEntityNamespace.'\\'.$simpleName.') was referenced relatively but has no matching use statement', $file, $lines);
             } else {
-                if (preg_match('/\Wuse\s+\\\?' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
+                if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
                     continue;
                 }
-                if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\' . str_replace('\\', '\\\\', $usedEntity) . ';/', $fileContent)) {
-                    continue;
-                }
-
-                if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s' . $aliasName . ';/', $fileContent)) {
+                if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
                     continue;
                 }
 
-                $this->addMultipleErrors('Class ' . $usedEntity . ' was referenced relatively but not defined', $file, $lines);
+                if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s'.$aliasName.';/', $fileContent)) {
+                    continue;
+                }
+
+                $this->addMultipleErrors('Class '.$usedEntity.' was referenced relatively but not defined', $file, $lines);
             }
         }
     }
 
-    private function addMultipleErrors($description, $file, array $lines) {
+    private function addMultipleErrors($description, $file, array $lines)
+    {
         $this->foundError = true;
         foreach ($lines as $line) {
             $this->output->addError($description, $file, $line);
         }
     }
-
 }

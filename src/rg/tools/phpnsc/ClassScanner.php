@@ -7,13 +7,15 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace rg\tools\phpnsc;
 
 use PhpParser\Error;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\ParserFactory;
 
-class ClassScanner {
+class ClassScanner
+{
     /**
      * @var FilesystemAccess
      */
@@ -25,18 +27,18 @@ class ClassScanner {
     private $useStatements;
 
     /**
-     *
      * @var Output
      */
     private $output;
 
     /**
      * @param FilesystemAccess $filesystem
-     * @param string $root
-     * @param string $namespaceVendor
-     * @param Output $output
+     * @param string           $root
+     * @param string           $namespaceVendor
+     * @param Output           $output
      */
-    public function __construct(FilesystemAccess $filesystem, $root, $namespaceVendor, Output $output) {
+    public function __construct(FilesystemAccess $filesystem, $root, $namespaceVendor, Output $output)
+    {
         $this->filesystem = $filesystem;
         $this->root = $root;
         $this->namespaceVendor = $namespaceVendor;
@@ -46,17 +48,18 @@ class ClassScanner {
 
     /**
      * parses all given files for classes and interfaces that are defined or used in this
-     * files
+     * files.
      *
      * @param array $files
      */
-    public function parseFilesForClassesAndInterfaces($files) {
+    public function parseFilesForClassesAndInterfaces($files)
+    {
         $parserFactory = new ParserFactory();
         $parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
 
         $progressbar = new Progressbar($this->output, count($files));
         foreach ($files as $file) {
-            $namespace = (string)new NamespaceString($this->namespaceVendor, $this->root, $file);
+            $namespace = (string) new NamespaceString($this->namespaceVendor, $this->root, $file);
             $originalFileContent = $this->filesystem->getFile($file);
 
             try {
@@ -66,13 +69,13 @@ class ClassScanner {
                     $namespaceOfFile = implode('\\', $firstStatement->name->parts);
                     if ($namespace !== $namespaceOfFile) {
                         $this->foundError = true;
-                        $this->output->addError('Namespace does not match folder structure, got ' . $namespaceOfFile . ' expected ' . $namespace, $file, $firstStatement->getLine());
+                        $this->output->addError('Namespace does not match folder structure, got '.$namespaceOfFile.' expected '.$namespace, $file, $firstStatement->getLine());
                     }
                 }
             } catch (Error $e) {
                 $this->foundError = true;
                 $this->output->addError(
-                    'Parse Error: ' . $e->getMessage(),
+                    'Parse Error: '.$e->getMessage(),
                     $file,
                     1
                 );
@@ -86,33 +89,36 @@ class ClassScanner {
     }
 
     /**
-     *
      * @param string $fileContent
+     *
      * @return string
      */
-    private function cleanContent($fileContent) {
+    private function cleanContent($fileContent)
+    {
         $fileContent = str_replace('\\\'', '  ', $fileContent);
         $fileContent = str_replace('\\"', '  ', $fileContent);
         $fileContent = preg_replace("/([a-zA-Z])\'([a-zA-Z])/", '$1$2', $fileContent);
         $getWhitespaces = function ($count) {
             $s = '';
-            for ($i = 0; $i < $count; $i++) {
+            for ($i = 0; $i < $count; ++$i) {
                 $s .= ' ';
             }
+
             return $s;
         };
 
-        $cleanWithWhitespaces = function($pattern, $fileContent) use ($getWhitespaces) {
+        $cleanWithWhitespaces = function ($pattern, $fileContent) use ($getWhitespaces) {
             $matches = [];
             preg_match_all($pattern, $fileContent, $matches, PREG_OFFSET_CAPTURE);
             if (isset($matches[1])) {
                 foreach ($matches[1] as $match) {
                     $fileContent =
-                        substr($fileContent, 0, $match[1]) .
-                        $getWhitespaces(strlen($match[0])) .
+                        substr($fileContent, 0, $match[1]).
+                        $getWhitespaces(strlen($match[0])).
                         substr($fileContent, $match[1] + strlen($match[0]));
                 }
             }
+
             return $fileContent;
         };
         $fileContent = str_replace('*/*', '', $fileContent);
@@ -120,58 +126,65 @@ class ClassScanner {
         $fileContent = $cleanWithWhitespaces("/(\?>.*<\?)/sU", $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\?>.*$)/sU", $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\'.*\')/sU", $fileContent);
-        $fileContent = $cleanWithWhitespaces("/(\".*\")/sU", $fileContent);
+        $fileContent = $cleanWithWhitespaces('/(".*")/sU', $fileContent);
         $fileContent = $cleanWithWhitespaces("/(\/\/.*)/", $fileContent);
-        $fileContent = $cleanWithWhitespaces("/(<<<(?P<tag>_[A-Za-z]+).*(?P=tag);)/sU", $fileContent);
-        $fileContent = $cleanWithWhitespaces("/(<<<(?P<tag>[A-Za-z_]+).*(?P=tag);)/sU", $fileContent);
+        $fileContent = $cleanWithWhitespaces('/(<<<(?P<tag>_[A-Za-z]+).*(?P=tag);)/sU', $fileContent);
+        $fileContent = $cleanWithWhitespaces('/(<<<(?P<tag>[A-Za-z_]+).*(?P=tag);)/sU', $fileContent);
 
         if (false) {
             $fileContent = preg_replace("/(\/\*.*\*\/)/sU", '', $fileContent);
-            $fileContent = preg_replace("/(\?>.*<\?)/sU", "", $fileContent);
-            $fileContent = preg_replace("/(\?>.*$)/sU", "", $fileContent);
-            $fileContent = preg_replace("/(\'.*\')/sU", "", $fileContent);
-            $fileContent = preg_replace("/(\".*\")/sU", "", $fileContent);
-            $fileContent = preg_replace("/(\/\/.*)/", "", $fileContent);
+            $fileContent = preg_replace("/(\?>.*<\?)/sU", '', $fileContent);
+            $fileContent = preg_replace("/(\?>.*$)/sU", '', $fileContent);
+            $fileContent = preg_replace("/(\'.*\')/sU", '', $fileContent);
+            $fileContent = preg_replace('/(".*")/sU', '', $fileContent);
+            $fileContent = preg_replace("/(\/\/.*)/", '', $fileContent);
         }
+
         return $fileContent;
     }
 
     /**
      * @return array
      */
-    public function getDefinedEntities() {
+    public function getDefinedEntities()
+    {
         return $this->definedEntities;
     }
 
     /**
      * @param string $file
+     *
      * @return array
      */
-    public function getUsedEntities($file) {
+    public function getUsedEntities($file)
+    {
         if (!isset($this->usedEntities[$file])) {
             return [];
         }
+
         return $this->usedEntities[$file];
     }
 
     /**
      * @param string $file
+     *
      * @return array
      */
-    public function getUseStatements($file) {
+    public function getUseStatements($file)
+    {
         if (!isset($this->useStatements[$file])) {
             return [];
         }
+
         return $this->useStatements[$file];
     }
 
-
-
-    public function parseUsedEntities($file, $namespace, $fileContent, $originalFileContent) {
+    public function parseUsedEntities($file, $namespace, $fileContent, $originalFileContent)
+    {
         $reservedClassKeywords = [
             'parent', 'self', '__class__', 'static', 'array', 'new', 'clone',
             'callable', 'string', 'int', 'float', 'bool', 'resource', 'false', 'true',
-            'null', 'numeric', 'mixed', 'object'
+            'null', 'numeric', 'mixed', 'object',
         ];
         // new operator
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\Wnew\s+([a-zA-Z0-9_\\\]+)/i', $this->usedEntities, $reservedClassKeywords);
@@ -215,7 +228,7 @@ class ClassScanner {
         }
         $matches = [];
         preg_match_all($regex, $fileContent, $matches, PREG_OFFSET_CAPTURE);
-        $checkAndAddMatch = function($match, $line) use(&$targetArray, $file, $reservedKeywords) {
+        $checkAndAddMatch = function ($match, $line) use (&$targetArray, $file, $reservedKeywords) {
             if (!in_array(strtolower($match), $reservedKeywords)) {
                 if (!isset($targetArray[$file][$match])) {
                     $targetArray[$file][$match] = [];
@@ -244,23 +257,25 @@ class ClassScanner {
                 } else {
                     $checkAndAddMatch($match, $matchLine);
                 }
-
             }
         }
     }
 
-    public function parseDefinedEntities($file, $namespace, $fileContent, $originalFileContent) {
+    public function parseDefinedEntities($file, $namespace, $fileContent, $originalFileContent)
+    {
         $this->parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, '/^\s*(abstract\s+|final\s+)?class\s+([a-zA-Z0-9_]+)\W/mi', $this->definedEntities, 2);
         $this->parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, '/^\s*interface\s+([a-zA-Z0-9_]+)\W/mi', $this->definedEntities);
     }
 
-    public function parseUseStatements($file, $namespace, $fileContent, $originalFileContent) {
+    public function parseUseStatements($file, $namespace, $fileContent, $originalFileContent)
+    {
         // TODO analyze use x as y;
         // TODO analyze use concatenation
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\Wuse\s([a-zA-Z0-9_\\\]+)\W/i', $this->useStatements);
     }
 
-    private function parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, $regex, &$targetArray, $matchIndex = 1) {
+    private function parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, $regex, &$targetArray, $matchIndex = 1)
+    {
         $matches = [];
         preg_match_all($regex, $fileContent, $matches);
         if (isset($matches[$matchIndex]) && $matches[$matchIndex]) {
