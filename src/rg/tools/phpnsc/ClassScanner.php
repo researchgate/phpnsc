@@ -103,7 +103,7 @@ class ClassScanner {
         };
 
         $cleanWithWhitespaces = function($pattern, $fileContent) use ($getWhitespaces) {
-            $matches = array();
+            $matches = [];
             preg_match_all($pattern, $fileContent, $matches, PREG_OFFSET_CAPTURE);
             if (isset($matches[1])) {
                 foreach ($matches[1] as $match) {
@@ -148,8 +148,8 @@ class ClassScanner {
      * @return array
      */
     public function getUsedEntities($file) {
-        if (! isset($this->usedEntities[$file])) {
-            return array();
+        if (!isset($this->usedEntities[$file])) {
+            return [];
         }
         return $this->usedEntities[$file];
     }
@@ -159,8 +159,8 @@ class ClassScanner {
      * @return array
      */
     public function getUseStatements($file) {
-        if (! isset($this->useStatements[$file])) {
-            return array();
+        if (!isset($this->useStatements[$file])) {
+            return [];
         }
         return $this->useStatements[$file];
     }
@@ -168,11 +168,11 @@ class ClassScanner {
 
 
     public function parseUsedEntities($file, $namespace, $fileContent, $originalFileContent) {
-        $reservedClassKeywords = array(
+        $reservedClassKeywords = [
             'parent', 'self', '__class__', 'static', 'array', 'new', 'clone',
             'callable', 'string', 'int', 'float', 'bool', 'resource', 'false', 'true',
             'null', 'numeric', 'mixed', 'object'
-        );
+        ];
         // new operator
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\Wnew\s+([a-zA-Z0-9_\\\]+)/i', $this->usedEntities, $reservedClassKeywords);
         // Extends
@@ -194,23 +194,33 @@ class ClassScanner {
         );
 
         // implements
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\simplements\s+([\s,a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, array(), 1, ',');
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\simplements\s+([\s,a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, [], 1, ',');
         // Instanceof
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\sinstanceof\s+([a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities);
     }
 
-    private function parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, $regex, &$targetArray, array $reservedKeywords = array(), $matchIndex = 1, $split = null) {
-        if (! isset($targetArray[$file])) {
-            $targetArray[$file] = array();
+    private function parseFileWithRegexForUsedEntities(
+        $file,
+        $namespace,
+        $fileContent,
+        $originalFileContent,
+        $regex,
+        &$targetArray,
+        array $reservedKeywords = [],
+        $matchIndex = 1,
+        $split = null
+    ) {
+        if (!isset($targetArray[$file])) {
+            $targetArray[$file] = [];
         }
-        $matches = array();
+        $matches = [];
         preg_match_all($regex, $fileContent, $matches, PREG_OFFSET_CAPTURE);
         $checkAndAddMatch = function($match, $line) use(&$targetArray, $file, $reservedKeywords) {
-            if (! in_array(strtolower($match), $reservedKeywords)) {
-                if (! isset($targetArray[$file][$match])) {
-                    $targetArray[$file][$match] = array();
+            if (!in_array(strtolower($match), $reservedKeywords)) {
+                if (!isset($targetArray[$file][$match])) {
+                    $targetArray[$file][$match] = [];
                 }
-                if (! in_array($line, $targetArray[$file][$match])) {
+                if (!in_array($line, $targetArray[$file][$match])) {
                     $targetArray[$file][$match][] = $line;
                 }
             }
@@ -251,7 +261,7 @@ class ClassScanner {
     }
 
     private function parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, $regex, &$targetArray, $matchIndex = 1) {
-        $matches = array();
+        $matches = [];
         preg_match_all($regex, $fileContent, $matches);
         if (isset($matches[$matchIndex]) && $matches[$matchIndex]) {
             foreach ($matches[$matchIndex] as $match) {
@@ -259,9 +269,9 @@ class ClassScanner {
                     $targetArray[$match]['namespaces'][] = $namespace;
                     continue;
                 }
-                $targetArray[$match] = array(
-                    'namespaces' => array($namespace),
-                );
+                $targetArray[$match] = [
+                    'namespaces' => [$namespace],
+                ];
             }
         }
     }

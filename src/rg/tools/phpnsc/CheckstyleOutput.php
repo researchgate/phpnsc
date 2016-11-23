@@ -17,13 +17,23 @@ class CheckstyleOutput implements Output {
      * @var OutputInterface
      */
     private $output;
-    private $errors = array();
+
+    /**
+     * @var array
+     */
+    private $errors = [];
 
     /**
      * @var string
      */
     private $file;
 
+    /**
+     * @param OutputInterface $output
+     * @param string|null     $parameter
+     *
+     * @throws \LogicException
+     */
     public function __construct(OutputInterface $output, $parameter = null) {
         $this->output = $output;
         $this->file = $parameter;
@@ -33,17 +43,17 @@ class CheckstyleOutput implements Output {
     }
 
     public function addError($description, $file, $line) {
-        if (! isset($this->errors[$file])) {
-            $this->errors[$file] = array();
+        if (!isset($this->errors[$file])) {
+            $this->errors[$file] = [];
         }
 
-        $this->errors[$file][] = array(
+        $this->errors[$file][] = [
             'line' => $line,
             'column' => 1,
             'severity' => 'error',
             'message' => $description,
             'source' => 'rg.tools.phpnsc',
-        );
+        ];
     }
     public function printAll() {
         $xml = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;

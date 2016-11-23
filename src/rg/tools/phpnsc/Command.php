@@ -22,7 +22,7 @@ class Command extends Console\Command\Command
     }
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output) {
         $configFile = $input->getArgument('config');
-        if (! $configFile) {
+        if (!$configFile) {
             throw new \Exception('Config argument needed');
         }
         $filesystem = new FilesystemAccess(null);
