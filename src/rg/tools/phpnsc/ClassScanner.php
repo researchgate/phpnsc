@@ -9,7 +9,9 @@
  */
 namespace rg\tools\phpnsc;
 
+use PhpParser\Error;
 use PhpParser\Node\Stmt\Namespace_;
+use PhpParser\ParserFactory;
 
 class ClassScanner {
     /**
@@ -49,7 +51,8 @@ class ClassScanner {
      * @param array $files
      */
     public function parseFilesForClassesAndInterfaces($files) {
-        $parser = new \PhpParser\Parser(new \PhpParser\Lexer);
+        $parserFactory = new ParserFactory();
+        $parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
 
         $progressbar = new Progressbar($this->output, count($files));
         foreach ($files as $file) {
@@ -66,7 +69,7 @@ class ClassScanner {
                         $this->output->addError('Namespace does not match folder structure, got ' . $namespaceOfFile . ' expected ' . $namespace, $file, $firstStatement->getLine());
                     }
                 }
-            } catch (\PhpParser\Error $e) {
+            } catch (Error $e) {
                 $this->foundError = true;
                 $this->output->addError(
                     'Parse Error: ' . $e->getMessage(),
