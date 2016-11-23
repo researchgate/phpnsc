@@ -15,7 +15,7 @@ class NamespaceDependencyCheckerTest extends PHPUnit_Framework_TestCase
 
     /**
      *
-     * @var rg\tools\phpnsc\ClassModifier
+     * @var rg\tools\phpnsc\NamespaceDependencyChecker
      */
     private $dependencyChecker;
 

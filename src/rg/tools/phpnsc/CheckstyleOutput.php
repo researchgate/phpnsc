@@ -12,23 +12,31 @@ namespace rg\tools\phpnsc;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckstyleOutput implements Output {
-    
+
     /**
-     * @var OutputInterface 
+     * @var OutputInterface
      */
     private $output;
     private $errors = array();
 
+    /**
+     * @var string
+     */
+    private $file;
+
     public function __construct(OutputInterface $output, $parameter = null) {
         $this->output = $output;
         $this->file = $parameter;
+        if (!$this->file) {
+            throw new \LogicException("\\rg\\tools\\phpnsc\\CheckstyleOutput needs parameter to be set to the destination filename.")
+        }
     }
-    
+
     public function addError($description, $file, $line) {
         if (! isset($this->errors[$file])) {
             $this->errors[$file] = array();
         }
-        
+
         $this->errors[$file][] = array(
             'line' => $line,
             'column' => 1,
@@ -48,13 +56,13 @@ class CheckstyleOutput implements Output {
             $xml .= '  </file>' . PHP_EOL;
         }
         $xml .= '</checkstyle>' . PHP_EOL;
-        
+
         file_put_contents($this->file, $xml);
     }
-    
+
     public function write($text) {
     }
-    
+
     public function writeln($text) {
     }
 }
