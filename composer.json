@@ -1,6 +1,6 @@
 {
     "name": "rg/phpnsc",
-    "license" : "Apache 2.0",
+    "license" : "MIT",
     "authors" : [
         {
             "name" : "Bastian Hofmann",
