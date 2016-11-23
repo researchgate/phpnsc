@@ -4,6 +4,8 @@ phpnsc
 
 .. image:: https://travis-ci.org/researchgate/phpnsc.svg?branch=master
     :target: https://travis-ci.org/researchgate/phpnsc
+.. image:: https://img.shields.io/packagist/v/rg/phpnsc.svg
+    :target: https://packagist.org/packages/rg/phpnsc
 
 The PHP namespace checker, checks all files in a project for invalid class references.
 
