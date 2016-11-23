@@ -15,8 +15,8 @@
         "phpunit/php-timer": "^1.0.0"
     },
     "autoload" : {
-        "psr-0" : {
-            "rg\\tools\\phpnsc" : "src/"
+        "psr-4" : {
+            "rg\\tools\\phpnsc\\" : "src/"
         }
     },
     "bin" : [
