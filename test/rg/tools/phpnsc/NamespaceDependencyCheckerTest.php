@@ -44,7 +44,7 @@ class NamespaceDependencyCheckerTest extends PHPUnit_Framework_TestCase
           array (
             0 => 'Class TestException was referenced relatively but not defined',
             1 => '/root/folder/testnamespace/ClassOne.php',
-            2 => 12,
+            2 => 14,
           ),
           1 =>
           array (
@@ -95,9 +95,11 @@ class ClassModifierFilesystemMock extends \rg\tools\phpnsc\FilesystemAccess
 '<?php
 namespace vendor\testnamespace;
 use vendor\testnamespaceTwo\OtherNamespace;
+use GlobalClassWithoutUnderscore as GlobalAlias;
+use GlobalClassWith_Underscore as UnderscoreAlias;
 
 class ClassOne extends ClassTwo {
-    public function test(\\OutOfNamespace $foo, OtherNamespace $bar) {
+    public function test(\\OutOfNamespace $foo, OtherNamespace $bar, GlobalAlias $anotherFoo, UnderscoreAlias $anotherBar) {
         parent::test();
 
         $b = new ClassTwo(ClassOne::CONSTANT, ClassTwo::CONSTANT, \\OutOfNamespace::FOO);
