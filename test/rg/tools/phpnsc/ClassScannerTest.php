@@ -1,25 +1,30 @@
 <?php
+namespace rg\test\tools\phpnsc;
 
+use PHPUnit\Framework\TestCase;
+use rg\tools\phpnsc\ClassScanner;
+use rg\tools\phpnsc\ConsoleOutput;
+use rg\tools\phpnsc\FilesystemAccess;
+use Symfony\Component\Console\Output\NullOutput;
 
-class ClassScannerTest extends PHPUnit_Framework_TestCase
+class ClassScannerTest extends TestCase
 {
     /**
-     *
      * @var ClassScannerFilesystemMock
      */
     private $filesystem;
+
     /**
-     *
-     * @var rg\tools\phpnsc\ClassScanner
+     * @var ClassScanner
      */
     private $classScanner;
 
     protected function setUp() {
         parent::setUp();
-        $output = new Symfony\Component\Console\Output\NullOutput();
-        $outputClass = new rg\tools\phpnsc\ConsoleOutput($output);
+        $output = new NullOutput();
+        $outputClass = new ConsoleOutput($output);
         $this->filesystem = new ClassScannerFilesystemMock('/root/folder');
-        $this->classScanner = new rg\tools\phpnsc\ClassScanner($this->filesystem, '/root/folder',
+        $this->classScanner = new ClassScanner($this->filesystem, '/root/folder',
                 'vendor', $outputClass);
     }
 
@@ -219,7 +224,7 @@ function foo(ClassFour $bar) : ClassFive {}
     }
 }
 
-class ClassScannerFilesystemMock extends \rg\tools\phpnsc\FilesystemAccess
+class ClassScannerFilesystemMock extends FilesystemAccess
 {
     public $filesystem = array();
 

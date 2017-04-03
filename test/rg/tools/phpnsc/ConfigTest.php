@@ -1,25 +1,28 @@
 <?php
+namespace rg\test\tools\phpnsc;
 
+use PHPUnit\Framework\TestCase;
+use rg\tools\phpnsc\Config;
+use rg\tools\phpnsc\FilesystemAccess;
 
-class ConfigTest extends PHPUnit_Framework_TestCase
+class ConfigTest extends TestCase
 {
     /**
-     *
-     * @var FilesystemMock 
+     * @var FilesystemMock
      */
     private $filesystem;
+
     /**
-     *
-     * @var rg\tools\phpnsc\Config 
+     * @var Config
      */
     private $config;
-    
+
     protected function setUp() {
         parent::setUp();
         $this->filesystem = new FilesystemMock('/root/folder');
-        $this->config = new rg\tools\phpnsc\Config($this->filesystem);
+        $this->config = new Config($this->filesystem);
     }
-    
+
     public function testLoadConfig() {
         $this->config->loadConfig('foo');
         $config = $this->config->getConfig();
@@ -31,7 +34,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     }
 }
 
-class FilesystemMock extends \rg\tools\phpnsc\FilesystemAccess
+class FilesystemMock extends FilesystemAccess
 {
     public function getFile($filename) {
         return '{
@@ -57,7 +60,7 @@ class FilesystemMock extends \rg\tools\phpnsc\FilesystemAccess
     }
 }';
     }
-    
+
     public function realpath($path) {
         return $path;
     }

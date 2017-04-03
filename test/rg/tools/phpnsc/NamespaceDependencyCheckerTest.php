@@ -1,38 +1,44 @@
 <?php
+namespace rg\test\tools\phpnsc;
 
-class NamespaceDependencyCheckerTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+use rg\tools\phpnsc\ClassScanner;
+use rg\tools\phpnsc\FilesystemAccess;
+use rg\tools\phpnsc\NamespaceDependencyChecker;
+use rg\tools\phpnsc\Output;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
+
+class NamespaceDependencyCheckerTest extends TestCase
 {
     /**
-     *
      * @var ClassModifierFilesystemMock
      */
     private $filesystem;
+
     /**
-     *
-     * @var rg\tools\phpnsc\ClassScanner
+     * @var ClassScanner
      */
     private $classScanner;
 
     /**
-     *
-     * @var rg\tools\phpnsc\NamespaceDependencyChecker
+     * @var NamespaceDependencyChecker
      */
     private $dependencyChecker;
 
     /**
-     *
      * @var DependencyCheckerOutputMock
      */
     private $outputClass;
 
     protected function setUp() {
         parent::setUp();
-        $output = new Symfony\Component\Console\Output\NullOutput();
+        $output = new NullOutput();
         $this->outputClass = new DependencyCheckerOutputMock($output);
         $this->filesystem = new ClassModifierFilesystemMock('/root/folder');
-        $this->classScanner = new rg\tools\phpnsc\ClassScanner($this->filesystem, '/root/folder',
+        $this->classScanner = new ClassScanner($this->filesystem, '/root/folder',
                 'vendor', $this->outputClass);
-        $this->dependencyChecker = new rg\tools\phpnsc\NamespaceDependencyChecker($this->filesystem, $this->classScanner,
+        $this->dependencyChecker = new NamespaceDependencyChecker($this->filesystem, $this->classScanner,
                 'vendor', '/root/folder', $this->outputClass);
     }
 
@@ -63,9 +69,7 @@ class NamespaceDependencyCheckerTest extends PHPUnit_Framework_TestCase
     }
 }
 
-use Symfony\Component\Console\Output\OutputInterface;
-
-class DependencyCheckerOutputMock implements rg\tools\phpnsc\Output
+class DependencyCheckerOutputMock implements Output
 {
     public $errors = array();
 
@@ -88,7 +92,7 @@ class DependencyCheckerOutputMock implements rg\tools\phpnsc\Output
     }
 }
 
-class ClassModifierFilesystemMock extends \rg\tools\phpnsc\FilesystemAccess
+class ClassModifierFilesystemMock extends FilesystemAccess
 {
     public $filesystem = array(
 '/root/folder/testnamespace/ClassOne.php' =>
