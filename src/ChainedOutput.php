@@ -18,6 +18,10 @@ class ChainedOutput implements Output
      * @var OutputInterface
      */
     private $output;
+
+    /**
+     * @var array
+     */
     private $outputClasses = [];
 
     public function __construct(OutputInterface $output, $parameter = null)

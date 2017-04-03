@@ -11,6 +11,7 @@
 namespace rg\tools\phpnsc;
 
 use Symfony\Component\Console;
+use Symfony\Component\Console\Application;
 
 class Command extends Console\Command\Command
 {
@@ -21,6 +22,12 @@ class Command extends Console\Command\Command
         $this->setDescription('run the script');
         $this->setHelp('phpnsc run config_file.json');
         $this->addArgument('config', Console\Input\InputOption::VALUE_REQUIRED, 'path to config file. see README.rst for details');
+    }
+
+    public static function main() {
+        $application = new Application('phpnsc');
+        $application->add(new self('run'));
+        $application->run();
     }
 
     protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
