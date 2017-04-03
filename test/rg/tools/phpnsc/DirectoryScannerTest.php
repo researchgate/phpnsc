@@ -1,37 +1,43 @@
 <?php
+namespace rg\test\tools\phpnsc;
 
+use PHPUnit\Framework\TestCase;
+use rg\tools\phpnsc\DirectoryScanner;
+use rg\tools\phpnsc\FilesystemAccess;
 
-class DirectoryScannerTest extends PHPUnit_Framework_TestCase
+class DirectoryScannerTest extends TestCase
 {
     /**
-     *
-     * @var FilesystemMock 
+     * @var FilesystemMock
      */
     private $filesystem;
+
     /**
-     *
-     * @var rg\tools\phpnsc\DirectoryScanner 
+     * @var DirectoryScanner
      */
     private $directoryScanner;
-    
+
+    /**
+     * @var string
+     */
     private $root;
-    
+
     protected function setUp() {
         parent::setUp();
         $this->filesystem = new DirectoryScannerFilesystemMock('/root/folder');
         $this->root = '/root/folder';
-        $this->directoryScanner = new rg\tools\phpnsc\DirectoryScanner($this->filesystem, $this->root);
+        $this->directoryScanner = new DirectoryScanner($this->filesystem, $this->root);
     }
-    
+
     public function testReadDirectory() {
         $this->directoryScanner->includeDirectory('one');
         $this->directoryScanner->includeDirectory('two');
         $this->directoryScanner->excludeDirectory('two/subfolder2');
         $this->directoryScanner->includeFiletype('.php');
         $this->directoryScanner->excludeFiletype('.tpl.php');
-        
+
         $files = $this->directoryScanner->getFiles();
-        
+
         $expected = array(
             '/root/folder/one/subfolder1/included11.php',
             '/root/folder/one/subfolder1/included11.two.php',
@@ -40,12 +46,12 @@ class DirectoryScannerTest extends PHPUnit_Framework_TestCase
             '/root/folder/two/included2.php',
             '/root/folder/two/included2.two.php',
         );
-        
+
         $this->assertEquals($expected, $files);
     }
 }
 
-class DirectoryScannerFilesystemMock extends \rg\tools\phpnsc\FilesystemAccess
+class DirectoryScannerFilesystemMock extends FilesystemAccess
 {
     private $filesystem = array(
         '/root/folder/one' => array(
@@ -56,7 +62,7 @@ class DirectoryScannerFilesystemMock extends \rg\tools\phpnsc\FilesystemAccess
             'included1.php',
             'included1.two.php',
             'excluded1.tpl.php',
-            
+
         ),
         '/root/folder/one/subfolder1' => array(
             '.',
@@ -65,7 +71,7 @@ class DirectoryScannerFilesystemMock extends \rg\tools\phpnsc\FilesystemAccess
             'included11.php',
             'included11.two.php',
             'excluded11.tpl.php',
-            
+
         ),
         '/root/folder/two' => array(
             '.',
@@ -83,32 +89,32 @@ class DirectoryScannerFilesystemMock extends \rg\tools\phpnsc\FilesystemAccess
             'included22.php',
             'included22.two.php',
             'excluded22.tpl.php',
-            
+
         ),
     );
-    
+
     private $currentDirectory = array();
     private $currentItem = array();
-    
+
     public function openDirectory($directory) {
         $handle = count($this->currentDirectory) + 1;
         $this->currentDirectory[$handle] = $directory;
         $this->currentItem[$handle] = 0;
         return isset($this->filesystem[$directory]) ? $handle : false;
     }
-    
+
     public function closeDirectory($handle) {
         return true;
     }
-    
+
     public function isDir($path) {
         return isset($this->filesystem[$path]);
     }
-    
+
     public function realpath($path) {
         return $path;
     }
-    
+
     public function readdir($handle) {
         if (! isset($this->filesystem[$this->currentDirectory[$handle]][$this->currentItem[$handle]])) {
             return false;
