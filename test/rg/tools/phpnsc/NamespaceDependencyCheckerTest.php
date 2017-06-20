@@ -45,26 +45,28 @@ class NamespaceDependencyCheckerTest extends TestCase
     public function testModifyFiles() {
         $files = array_keys($this->filesystem->filesystem);
         $this->dependencyChecker->analyze($files);
-        $expected = array (
-          0 =>
-          array (
-            0 => 'Class TestException was referenced relatively but not defined',
-            1 => '/root/folder/testnamespace/ClassOne.php',
-            2 => 14,
-          ),
-          1 =>
-          array (
-            0 => 'Class InterfaceA (fully qualified: vendor\testnamespaceTwo\InterfaceA) was referenced relatively but has no matching use statement',
-            1 => '/root/folder/testnamespace/ClassTwo.php',
-            2 => 5,
-          ),
-          2 =>
-          array (
-            0 => 'Class ClassOne (fully qualified: vendor\testnamespace\ClassOne) was referenced relatively but has no matching use statement',
-            1 => '/root/folder/testnamespaceTwo/OtherNamespace.php',
-            2 => 14,
-          ),
-        );
+        $expected = [
+            [
+                'Class TestException was referenced relatively but not defined',
+                '/root/folder/testnamespace/ClassOne.php',
+                14,
+            ],
+            [
+                'Class void was referenced relatively but not defined',
+                '/root/folder/testnamespace/ClassOne.php',
+                22,
+            ],
+            [
+                'Class InterfaceA (fully qualified: vendor\testnamespaceTwo\InterfaceA) was referenced relatively but has no matching use statement',
+                '/root/folder/testnamespace/ClassTwo.php',
+                5,
+            ],
+            [
+                'Class ClassOne (fully qualified: vendor\testnamespace\ClassOne) was referenced relatively but has no matching use statement',
+                '/root/folder/testnamespaceTwo/OtherNamespace.php',
+                14,
+            ],
+        ];
         $this->assertEquals($expected, $this->outputClass->errors);
     }
 }
@@ -111,6 +113,14 @@ class ClassOne extends ClassTwo {
         try {
         } catch(TestException $e) {
         }
+    }
+    
+    private function testVoidAsReturnType(): void {
+        // this declaration should work fine
+    }
+    
+    private function testVoidAsArgument(void $foo) {
+        // this should not be allowed
     }
 }
 ',

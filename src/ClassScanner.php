@@ -186,6 +186,8 @@ class ClassScanner
             'callable', 'string', 'int', 'float', 'bool', 'resource', 'false', 'true',
             'null', 'numeric', 'mixed', 'object',
         ];
+        $reservedReturnTypes = array_merge($reservedClassKeywords, ['void']);
+
         // new operator
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\Wnew\s+([a-zA-Z0-9_\\\]+)/i', $this->usedEntities, $reservedClassKeywords);
         // Extends
@@ -203,7 +205,7 @@ class ClassScanner
             $originalFileContent,
             '/\)\s*:\s*([a-zA-Z0-9_\\\]+)\s*\{/i',
             $this->usedEntities,
-            $reservedClassKeywords
+            $reservedReturnTypes
         );
 
         // implements
