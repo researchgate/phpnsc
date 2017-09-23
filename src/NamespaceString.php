@@ -25,14 +25,18 @@ class NamespaceString
 
     public function getNamespace()
     {
-        $namespace = $this->namespaceVendor;
+        $namespace = '';
         $relativePath = str_replace($this->root, '', $this->fullFilePath);
         $relativePathParts = explode('/', $relativePath);
         for ($i = 1; $i < count($relativePathParts) - 1; ++$i) {
             $namespace .= '\\'.$relativePathParts[$i];
         }
 
-        return $namespace;
+        if ($this->namespaceVendor) {
+            return $this->namespaceVendor.$namespace;
+        }
+
+        return trim($namespace, '\\');
     }
 
     public function __toString()
