@@ -50,9 +50,11 @@ class ConsoleOutput implements Output
 
     public function printAll()
     {
-        $this->writeln('Errors found:'.PHP_EOL);
-        foreach ($this->errors as $error) {
-            $this->writeln($error['file'].' ('.$error['line'].'): '.$error['description']);
+        if ($this->errors) {
+            $this->writeln('Errors found:'.PHP_EOL);
+            foreach ($this->errors as $error) {
+                $this->writeln($error['file'].' ('.$error['line'].'): '.$error['description']);
+            }
         }
     }
 }
