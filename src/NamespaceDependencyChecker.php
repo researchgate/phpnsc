@@ -119,14 +119,14 @@ class NamespaceDependencyChecker
                     if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntityNamespaceT).';/', $fileContent)) {
                         continue 2;
                     }
-                    if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9\\\]+\sas\s'.$aliasName.';/', $fileContent)) {
+                    if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9_\\\]+\sas\s'.$aliasName.';/', $fileContent)) {
                         continue 2;
                     }
                 }
                 if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
                     continue;
                 }
-                if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
+                if (preg_match('/\Wuse\s+[a-zA-Z0-9_\\\]+\\\\'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
                     continue;
                 }
 
@@ -135,7 +135,7 @@ class NamespaceDependencyChecker
                 if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
                     continue;
                 }
-                if (preg_match('/\Wuse\s+[a-zA-Z0-9\\\]+\\\\'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
+                if (preg_match('/\Wuse\s+[a-zA-Z0-9_\\\]+\\\\'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
                     continue;
                 }
 

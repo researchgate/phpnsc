@@ -49,12 +49,12 @@ class NamespaceDependencyCheckerTest extends TestCase
             [
                 'Class TestException was referenced relatively but not defined',
                 '/root/folder/testnamespace/ClassOne.php',
-                14,
+                15,
             ],
             [
                 'Class void was referenced relatively but not defined',
                 '/root/folder/testnamespace/ClassOne.php',
-                22,
+                23,
             ],
             [
                 'Class InterfaceA (fully qualified: vendor\testnamespaceTwo\InterfaceA) was referenced relatively but has no matching use statement',
@@ -101,11 +101,12 @@ class ClassModifierFilesystemMock extends FilesystemAccess
 '<?php
 namespace vendor\testnamespace;
 use vendor\testnamespaceTwo\OtherNamespace;
+use vendor\testnamespaceWith_Underscore\UnderscoreNamespaceClass;
 use GlobalClassWithoutUnderscore as GlobalAlias;
 use GlobalClassWith_Underscore as UnderscoreAlias;
 
 class ClassOne extends ClassTwo {
-    public function test(\\OutOfNamespace $foo, OtherNamespace $bar, GlobalAlias $anotherFoo, UnderscoreAlias $anotherBar) {
+    public function test(\\OutOfNamespace $foo, OtherNamespace $bar, GlobalAlias $anotherFoo, UnderscoreAlias $anotherBar, UnderscoreNamespaceClass $underscoreNamespaceClass) {
         parent::test();
 
         $b = new ClassTwo(ClassOne::CONSTANT, ClassTwo::CONSTANT, \\OutOfNamespace::FOO);
