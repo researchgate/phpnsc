@@ -30,6 +30,11 @@ class NamespaceDependencyChecker
     private $output;
 
     /**
+     * @var bool
+     */
+    public $foundError;
+
+    /**
      * @param FilesystemAccess $filesystem
      * @param ClassScanner     $classScanner
      * @param string           $namespaceVendor

@@ -10,9 +10,9 @@
     ],
     "require": {
         "php": "^7.0.0",
-        "symfony/console" : "^2.1.0|^3.0.0",
+        "symfony/console" : "^2.1.0|^3.0.0|^4.0.0",
         "nikic/php-parser" : "^2.0.0|^3.0.0",
-        "phpunit/php-timer": "^1.0.0"
+        "phpunit/php-timer": "^2.0.0"
     },
     "autoload" : {
         "psr-4" : {
@@ -23,6 +23,6 @@
         "phpnsc"
     ],
     "require-dev": {
-        "phpunit/phpunit": "^6.0.0"
+        "phpunit/phpunit": "^7.0.0"
     }
 }

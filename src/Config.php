@@ -13,7 +13,7 @@ namespace rg\tools\phpnsc;
 class Config
 {
     /**
-     * @var FilesysyemAccess
+     * @var FilesystemAccess
      */
     private $filesystem;
 

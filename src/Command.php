@@ -10,6 +10,7 @@
 
 namespace rg\tools\phpnsc;
 
+use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Application;
 
@@ -72,7 +73,7 @@ class Command extends Console\Command\Command
 
         $outputClass->printAll();
 
-        $outputClass->writeln(\PHP_Timer::resourceUsage());
+        $outputClass->writeln(Timer::resourceUsage());
 
         if ($classScanner->foundError || $classModifier->foundError) {
             return 1;

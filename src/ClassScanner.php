@@ -32,6 +32,11 @@ class ClassScanner
     private $output;
 
     /**
+     * @var bool
+     */
+    public $foundError;
+
+    /**
      * @param FilesystemAccess $filesystem
      * @param string           $root
      * @param string           $namespaceVendor
