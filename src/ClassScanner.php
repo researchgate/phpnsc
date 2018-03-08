@@ -189,7 +189,7 @@ class ClassScanner
         $reservedClassKeywords = [
             'parent', 'self', '__class__', 'static', 'array', 'new', 'clone',
             'callable', 'string', 'int', 'float', 'bool', 'resource', 'false', 'true',
-            'null', 'numeric', 'mixed', 'object', 'iterable'
+            'null', 'numeric', 'mixed', 'object', 'iterable', 'yield'
         ];
         $reservedReturnTypes = array_merge($reservedClassKeywords, ['void']);
 
