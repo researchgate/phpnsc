@@ -37,48 +37,63 @@ class Command extends Console\Command\Command
         if (!$configFile) {
             throw new \Exception('Config argument needed');
         }
+
         $filesystem = new FilesystemAccess(null);
         $config = new Config($filesystem);
         $config->loadConfig($configFile);
         $config = $config->getConfig();
-
-        $config->folders->root = realpath($config->folders->root);
-
-        $filesystem->setRoot($config->folders->root);
-
-        $directoryScanner = new DirectoryScanner($filesystem, $config->folders->root);
-        foreach ($config->folders->include as $include) {
-            $directoryScanner->includeDirectory($include);
-        }
-        foreach ($config->folders->exclude as $exclude) {
-            $directoryScanner->excludeDirectory($exclude);
-        }
-        foreach ($config->filetypes->include as $include) {
-            $directoryScanner->includeFiletype($include);
-        }
-        foreach ($config->filetypes->exclude as $exclude) {
-            $directoryScanner->excludeFiletype($exclude);
-        }
-        $files = $directoryScanner->getFiles();
 
         $outputClass = new ChainedOutput($output);
         foreach ($config->output as $outputConfiguration) {
             $outputClass->addOutputClass($outputConfiguration->class, $outputConfiguration->parameter);
         }
 
-        $classScanner = new ClassScanner($filesystem, $config->folders->root, $config->vendor, $outputClass);
-        $classModifier = new NamespaceDependencyChecker($filesystem, $classScanner, $config->vendor, $config->folders->root, $outputClass);
+        $filesPerRoot = [];
+        $classScanner = new ClassScanner($filesystem, $outputClass);
+        foreach ($config->sources as $sourceConfig) {
+            $sourceConfig->folders->root = realpath($sourceConfig->folders->root);
+            $filesystem->setRoot($sourceConfig->folders->root);
 
-        $classModifier->analyze($files);
+            $outputClass->writeln('Scan ' . $sourceConfig->folders->root);
+
+            $directoryScanner = new DirectoryScanner($filesystem, $sourceConfig->folders->root);
+            foreach ($sourceConfig->folders->include as $include) {
+                $directoryScanner->includeDirectory($include);
+            }
+            foreach ($sourceConfig->folders->exclude as $exclude) {
+                $directoryScanner->excludeDirectory($exclude);
+            }
+            foreach ($sourceConfig->filetypes->include as $include) {
+                $directoryScanner->includeFiletype($include);
+            }
+            foreach ($sourceConfig->filetypes->exclude as $exclude) {
+                $directoryScanner->excludeFiletype($exclude);
+            }
+
+            $files = $directoryScanner->getFiles();
+            $classScanner->parseFilesForClassesAndInterfaces($files, $sourceConfig->folders->root, $sourceConfig->vendor);
+
+            $filesPerRoot[$sourceConfig->folders->root] = $files;
+            $outputClass->writeln('');
+        }
+
+        $foundError = false;
+
+        foreach ($config->sources as $sourceConfig) {
+            $filesystem->setRoot($sourceConfig->folders->root);
+            $outputClass->writeln('Analyze ' . $sourceConfig->folders->root);
+
+            $files = $filesPerRoot[$sourceConfig->folders->root];
+
+            $dependencyChecker = new NamespaceDependencyChecker($filesystem, $classScanner, $sourceConfig->vendor, $sourceConfig->folders->root, $outputClass);
+            $dependencyChecker->analyze($files);
+            $foundError |= $classScanner->foundError | $dependencyChecker->foundError;
+            $outputClass->writeln('');
+        }
 
         $outputClass->printAll();
-
         $outputClass->writeln(Timer::resourceUsage());
 
-        if ($classScanner->foundError || $classModifier->foundError) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return $foundError ? 1 : 0;
     }
 }

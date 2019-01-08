@@ -59,7 +59,6 @@ class NamespaceDependencyChecker
     {
         $this->output->writeln('Got '.count($files).' files');
         $this->output->writeln('Collect entities...');
-        $this->classScanner->parseFilesForClassesAndInterfaces($files);
         $this->definedEntities = $this->classScanner->getDefinedEntities();
         $this->output->writeln('Got '.count($this->definedEntities).' defined entities');
         $this->output->writeln('Check namespaces...');

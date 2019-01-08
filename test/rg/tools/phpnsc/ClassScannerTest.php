@@ -24,8 +24,7 @@ class ClassScannerTest extends TestCase
         $output = new NullOutput();
         $outputClass = new ConsoleOutput($output);
         $this->filesystem = new ClassScannerFilesystemMock('/root/folder');
-        $this->classScanner = new ClassScanner($this->filesystem, '/root/folder',
-                'vendor', $outputClass);
+        $this->classScanner = new ClassScanner($this->filesystem, $outputClass);
     }
 
     public function testParseDefinedEntities() {
@@ -61,7 +60,7 @@ interface InterfaceOne
         );
         $files = array_keys($this->filesystem->filesystem);
 
-        $this->classScanner->parseFilesForClassesAndInterfaces($files);
+        $this->classScanner->parseFilesForClassesAndInterfaces($files, '/root/folder', 'vendor');
 
         $expectedEntities = array(
             'ClassOne' => array(
@@ -104,7 +103,7 @@ interface   InterfaceTwo
         );
         $files = array_keys($this->filesystem->filesystem);
 
-        $this->classScanner->parseFilesForClassesAndInterfaces($files);
+        $this->classScanner->parseFilesForClassesAndInterfaces($files, '/root/folder', 'vendor');
 
         $expectedEntities = array(
             'ClassOne' => array(
@@ -151,7 +150,7 @@ interface   InterfaceTwo
         );
         $files = array_keys($this->filesystem->filesystem);
 
-        $this->classScanner->parseFilesForClassesAndInterfaces($files);
+        $this->classScanner->parseFilesForClassesAndInterfaces($files, '/root/folder', 'vendor');
 
         $expectedEntities = array(
             '/root/folder/namespace/ClassOne.php' => array(
@@ -198,7 +197,7 @@ function foo(ClassFour $bar) : ClassFive {}
         ];
         $files = array_keys($this->filesystem->filesystem);
 
-        $this->classScanner->parseFilesForClassesAndInterfaces($files);
+        $this->classScanner->parseFilesForClassesAndInterfaces($files, '/root/folder', 'vendor');
 
         $expectedEntities = [
             '/root/folder/namespace/ClassOne.php' => [

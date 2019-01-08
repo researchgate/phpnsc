@@ -22,8 +22,6 @@ class ClassScanner
     private $filesystem;
     private $definedEntities;
     private $usedEntities;
-    private $root;
-    private $namespaceVendor;
     private $useStatements;
 
     /**
@@ -38,15 +36,11 @@ class ClassScanner
 
     /**
      * @param FilesystemAccess $filesystem
-     * @param string           $root
-     * @param string           $namespaceVendor
      * @param Output           $output
      */
-    public function __construct(FilesystemAccess $filesystem, $root, $namespaceVendor, Output $output)
+    public function __construct(FilesystemAccess $filesystem, Output $output)
     {
         $this->filesystem = $filesystem;
-        $this->root = $root;
-        $this->namespaceVendor = $namespaceVendor;
         $this->output = $output;
         $this->foundError = false;
     }
@@ -56,15 +50,17 @@ class ClassScanner
      * files.
      *
      * @param array $files
+     * @param string $root
+     * @param string $namespaceVendor
      */
-    public function parseFilesForClassesAndInterfaces($files)
+    public function parseFilesForClassesAndInterfaces($files, $root, $namespaceVendor)
     {
         $parserFactory = new ParserFactory();
         $parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
 
         $progressbar = new Progressbar($this->output, count($files));
         foreach ($files as $file) {
-            $namespace = (string) new NamespaceString($this->namespaceVendor, $this->root, $file);
+            $namespace = (string) new NamespaceString($namespaceVendor, $root, $file);
             $originalFileContent = $this->filesystem->getFile($file);
 
             try {

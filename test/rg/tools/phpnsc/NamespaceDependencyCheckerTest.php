@@ -17,6 +17,11 @@ class NamespaceDependencyCheckerTest extends TestCase
     private $filesystem;
 
     /**
+     * @var array
+     */
+    private $files;
+
+    /**
      * @var ClassScanner
      */
     private $classScanner;
@@ -36,15 +41,14 @@ class NamespaceDependencyCheckerTest extends TestCase
         $output = new NullOutput();
         $this->outputClass = new DependencyCheckerOutputMock($output);
         $this->filesystem = new ClassModifierFilesystemMock('/root/folder');
-        $this->classScanner = new ClassScanner($this->filesystem, '/root/folder',
-                'vendor', $this->outputClass);
-        $this->dependencyChecker = new NamespaceDependencyChecker($this->filesystem, $this->classScanner,
-                'vendor', '/root/folder', $this->outputClass);
+        $this->files = array_keys($this->filesystem->filesystem);
+        $this->classScanner = new ClassScanner($this->filesystem, $this->outputClass);
+        $this->classScanner->parseFilesForClassesAndInterfaces($this->files, '/root/folder', 'vendor');
+        $this->dependencyChecker = new NamespaceDependencyChecker($this->filesystem, $this->classScanner, 'vendor', '/root/folder', $this->outputClass);
     }
 
     public function testModifyFiles() {
-        $files = array_keys($this->filesystem->filesystem);
-        $this->dependencyChecker->analyze($files);
+        $this->dependencyChecker->analyze($this->files);
         $expected = [
             [
                 'Class TestException was referenced relatively but not defined',

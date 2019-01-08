@@ -31,25 +31,29 @@ The configuration has to be in a JSON file, that usually is placed in the root o
 
 ```json
 {
-    "vendor": "vendorNamespace",
-    "folders": {
-        "root": "path/to/sources",
-        "include": [
-            "subpackage",
-            "subpackage_two"
-        ],
-        "exclude": [
-            "subpackage/excluded"
-        ]
-    },
-    "filetypes": {
-        "include": [
-            ".php"
-        ],
-        "exclude": [
-            ".config.php"
-        ]
-    },
+    "sources": [
+        {
+            "vendor": "vendorNamespace",
+            "folders": {
+                "root": "path/to/sources",
+                "include": [
+                    "subpackage",
+                    "subpackage_two"
+                ],
+                "exclude": [
+                    "subpackage/excluded"
+                ]
+            },
+            "filetypes": {
+                "include": [
+                    ".php"
+                ],
+                "exclude": [
+                    ".config.php"
+                ]
+            }
+        }
+    ],
     "output": [
         {
             "class": "rg\\tools\\phpnsc\\CheckstyleOutput",
@@ -63,11 +67,12 @@ The configuration has to be in a JSON file, that usually is placed in the root o
 }
 ```
 
-- vendor: specifies the root vendor namespace of your project, see (https://gist.github.com/1234504)
-- folders/root: the root folder of your project
-- include: which sub-folders of your project root should be included?
-- exclude: are there be any sub-sub-folders that should be excluded?
-- filetypes: file types that should be included and excluded from analysis
+- sources: list of source folders to be scanned
+    - vendor: specifies the root vendor namespace of your project, see (https://gist.github.com/1234504)
+    - folders/root: the root folder of your project
+    - include: which sub-folders of your project root should be included?
+    - exclude: are there be any sub-sub-folders that should be excluded?
+    - filetypes: file types that should be included and excluded from analysis
 - output: array of output classes that should be used. Currently support are:
     - CheckstyleOutput (checkstyle compatible XML file, e.g. for a CI server)
     - ConsoleOutput

@@ -1,23 +1,27 @@
 {
-    "vendor": "vendorNamespace",
-    "folders": {
-        "root": "path/to/sources",
-        "include": [
-            "subpackage",
-            "subpackage_two"
-        ],
-        "exclude": [
-            "subpackage/excluded"
-        ]
-    },
-    "filetypes": {
-        "include": [
-            ".php"
-        ],
-        "exclude": [
-            ".config.php"
-        ]
-    },
+    "sources": [
+        {
+            "vendor": "vendorNamespace",
+            "folders": {
+                "root": "path/to/sources",
+                "include": [
+                    "subpackage",
+                    "subpackage_two"
+                ],
+                "exclude": [
+                    "subpackage/excluded"
+                ]
+            },
+            "filetypes": {
+                "include": [
+                    ".php"
+                ],
+                "exclude": [
+                    ".config.php"
+                ]
+            }
+        }
+    ],
     "output": [
         {
             "class": "rg\\tools\\phpnsc\\CheckstyleOutput",
