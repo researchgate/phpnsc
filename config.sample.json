@@ -1,19 +1,31 @@
 {
-    "vendor" : "vendorNamespace",
-    "folders" : {
-        "root"    : "path/to/sources",
-        "include" : ["subpackage", "subpackage_two"],
-        "exclude" : ["subpackage/excluded"]
+    "vendor": "vendorNamespace",
+    "folders": {
+        "root": "path/to/sources",
+        "include": [
+            "subpackage",
+            "subpackage_two"
+        ],
+        "exclude": [
+            "subpackage/excluded"
+        ]
     },
-    "filetypes" : {
-        "include" : [".php"],
-        "exclude" : [".config.php"]
+    "filetypes": {
+        "include": [
+            ".php"
+        ],
+        "exclude": [
+            ".config.php"
+        ]
     },
-    "output" : [{
-        "class": "rg\\tools\\phpnsc\\CheckstyleOutput",
-        "parameter": "build/logs/phpnsc.xml"
-    },{
-        "class": "rg\\tools\\phpnsc\\ConsoleOutput",
-        "parameter": ""
-    }]
+    "output": [
+        {
+            "class": "rg\\tools\\phpnsc\\CheckstyleOutput",
+            "parameter": "build/logs/phpnsc.xml"
+        },
+        {
+            "class": "rg\\tools\\phpnsc\\ConsoleOutput",
+            "parameter": ""
+        }
+    ]
 }
