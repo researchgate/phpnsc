@@ -27,7 +27,7 @@ class NamespaceString
     {
         $namespace = '';
         $relativePath = str_replace($this->root, '', $this->fullFilePath);
-        $relativePathParts = explode('/', $relativePath);
+        $relativePathParts = explode(DIRECTORY_SEPARATOR, $relativePath);
         for ($i = 1; $i < count($relativePathParts) - 1; ++$i) {
             $namespace .= '\\'.$relativePathParts[$i];
         }
