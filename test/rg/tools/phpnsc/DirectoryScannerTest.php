@@ -26,7 +26,7 @@ class DirectoryScannerTest extends TestCase
         parent::setUp();
         $this->filesystem = new DirectoryScannerFilesystemMock('/root/folder');
         $this->root = '/root/folder';
-        $this->directoryScanner = new DirectoryScanner($this->filesystem, $this->root);
+        $this->directoryScanner = new DirectoryScanner($this->filesystem, $this->root, '/');
     }
 
     public function testReadDirectory() {
@@ -89,7 +89,6 @@ class DirectoryScannerFilesystemMock extends FilesystemAccess
             'included22.php',
             'included22.two.php',
             'excluded22.tpl.php',
-
         ),
     );
 
@@ -97,6 +96,7 @@ class DirectoryScannerFilesystemMock extends FilesystemAccess
     private $currentItem = array();
 
     public function openDirectory($directory) {
+        $directory = str_replace('\\', '/', $directory); // Normalize path on Windows
         $handle = count($this->currentDirectory) + 1;
         $this->currentDirectory[$handle] = $directory;
         $this->currentItem[$handle] = 0;

@@ -23,15 +23,18 @@ class DirectoryScanner
     private $directoryExcludes = [];
     private $filetypeIncludes = [];
     private $filetypeExcludes = [];
+    private $directorySeparator;
 
     /**
      * @param FilesystemAccess $filesystem
-     * @param string           $root
+     * @param string $root
+     * @param string $directorySeparator
      */
-    public function __construct(FilesystemAccess $filesystem, $root)
+    public function __construct(FilesystemAccess $filesystem, $root, $directorySeparator = DIRECTORY_SEPARATOR)
     {
         $this->filesystem = $filesystem;
         $this->root = $root;
+        $this->directorySeparator = $directorySeparator;
     }
 
     /**
@@ -75,7 +78,7 @@ class DirectoryScanner
     {
         $files = [];
         foreach ($this->directoryIncludes as $directory) {
-            $files = array_merge($files, $this->getFilesFromDir($this->root.DIRECTORY_SEPARATOR.$directory));
+            $files = array_merge($files, $this->getFilesFromDir($this->root.$this->directorySeparator.$directory));
         }
 
         return $files;
@@ -95,7 +98,7 @@ class DirectoryScanner
         if ($handle = $this->filesystem->openDirectory($dir)) {
             while (false !== ($file = $this->filesystem->readdir($handle))) {
                 if ($file != '.' && $file != '..') {
-                    $fullPath = $dir.DIRECTORY_SEPARATOR.$file;
+                    $fullPath = $dir.$this->directorySeparator.$file;
                     if ($this->filesystem->isDir($fullPath)) {
                         if (!$this->isDirectoryExcluded($fullPath)) {
                             $files[] = $this->getFilesFromDir($fullPath);
@@ -146,7 +149,7 @@ class DirectoryScanner
     private function isDirectoryExcluded($dir)
     {
         foreach ($this->directoryExcludes as $excluded) {
-            if ($this->filesystem->realpath($this->root.DIRECTORY_SEPARATOR.$excluded) === $this->filesystem->realpath($dir)) {
+            if ($this->filesystem->realpath($this->root.$this->directorySeparator.$excluded) === $this->filesystem->realpath($dir)) {
                 return true;
             }
         }
