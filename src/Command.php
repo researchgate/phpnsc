@@ -44,29 +44,36 @@ class Command extends Console\Command\Command
         $config = $config->getConfig();
 
         $outputClass = new ChainedOutput($output);
-        foreach ($config->output as $outputConfiguration) {
-            $outputClass->addOutputClass($outputConfiguration->class, $outputConfiguration->parameter);
+        foreach ($config->output ?? [] as $outputConfiguration) {
+            $outputClass->addOutputClass($outputConfiguration->class, $outputConfiguration->parameter ?? "");
         }
 
         $filesPerRoot = [];
         $classScanner = new ClassScanner($filesystem, $outputClass);
-        foreach ($config->sources as $sourceConfig) {
+        foreach ($config->sources ?? [] as $sourceConfig) {
+            if (!isset($sourceConfig->folders->root)) {
+                throw new \Exception('Config error: "sources[].folders.root" must be defined');
+            }
+            if (!isset($sourceConfig->vendor)) {
+                throw new \Exception('Config error: "sources[].vendor" must be defined');
+            }
+
             $sourceConfig->folders->root = realpath($sourceConfig->folders->root);
             $filesystem->setRoot($sourceConfig->folders->root);
 
             $outputClass->writeln('Scan ' . $sourceConfig->folders->root);
 
             $directoryScanner = new DirectoryScanner($filesystem, $sourceConfig->folders->root);
-            foreach ($sourceConfig->folders->include as $include) {
+            foreach ($sourceConfig->folders->include ?? [] as $include) {
                 $directoryScanner->includeDirectory($include);
             }
-            foreach ($sourceConfig->folders->exclude as $exclude) {
+            foreach ($sourceConfig->folders->exclude ?? [] as $exclude) {
                 $directoryScanner->excludeDirectory($exclude);
             }
-            foreach ($sourceConfig->filetypes->include as $include) {
+            foreach ($sourceConfig->filetypes->include ?? [] as $include) {
                 $directoryScanner->includeFiletype($include);
             }
-            foreach ($sourceConfig->filetypes->exclude as $exclude) {
+            foreach ($sourceConfig->filetypes->exclude ?? [] as $exclude) {
                 $directoryScanner->excludeFiletype($exclude);
             }
 
@@ -79,7 +86,7 @@ class Command extends Console\Command\Command
 
         $foundError = false;
 
-        foreach ($config->sources as $sourceConfig) {
+        foreach ($config->sources ?? [] as $sourceConfig) {
             $filesystem->setRoot($sourceConfig->folders->root);
             $outputClass->writeln('Analyze ' . $sourceConfig->folders->root);
 
