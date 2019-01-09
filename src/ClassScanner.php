@@ -183,7 +183,7 @@ class ClassScanner
     public function parseUsedEntities($file, $namespace, $fileContent, $originalFileContent)
     {
         $reservedClassKeywords = [
-            'parent', 'self', '__class__', 'static', 'array', 'new', 'clone',
+            'class', 'parent', 'self', '__class__', 'static', 'array', 'new', 'clone',
             'callable', 'string', 'int', 'float', 'bool', 'resource', 'false', 'true',
             'null', 'numeric', 'mixed', 'object', 'iterable', 'yield'
         ];
