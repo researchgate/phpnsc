@@ -1,7 +1,7 @@
 phpnsc
 ======
 
-[![Build Status](https://travis-ci.org/researchgate/phpnsc.svg?branch=master)](https://travis-ci.org/researchgate/phpnsc)
+[![Build Status](https://travis-ci.com/researchgate/phpnsc.svg?branch=master)](https://travis-ci.com/researchgate/phpnsc)
 [![Latest Stable Version](https://poser.pugx.org/rg/phpnsc/v/stable)](https://packagist.org/packages/rg/phpnsc)
 [![Total Downloads](https://poser.pugx.org/rg/phpnsc/downloads)](https://packagist.org/packages/rg/phpnsc)
 [![License](https://poser.pugx.org/rg/phpnsc/license)](https://packagist.org/packages/rg/phpnsc)
