@@ -123,32 +123,23 @@ class NamespaceDependencyChecker
                     if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntityNamespaceT).';/', $fileContent)) {
                         continue 2;
                     }
-                    if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9_\\\]+\sas\s'.$aliasName.';/', $fileContent)) {
-                        continue 2;
-                    }
+                    
                 }
-                if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
-                    continue;
-                }
-                if (preg_match('/\Wuse\s+[a-zA-Z0-9_\\\]+\\\\'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
-                    continue;
-                }
-
-                $this->addMultipleErrors('Class '.$usedEntity.' (fully qualified: '.$usedEntityNamespace.'\\'.$simpleName.') was referenced relatively but has no matching use statement', $file, $lines);
+                $errorMessage = 'Class '.$usedEntity.' (fully qualified: '.$usedEntityNamespace.'\\'.$simpleName.') was referenced relatively but has no matching use statement';
             } else {
-                if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
-                    continue;
-                }
-                if (preg_match('/\Wuse\s+[a-zA-Z0-9_\\\]+\\\\'.str_replace('\\', '\\\\', $usedEntity).';/', $fileContent)) {
-                    continue;
-                }
-
-                if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9_\\\]+\sas\s'.$aliasName.';/', $fileContent)) {
-                    continue;
-                }
-
-                $this->addMultipleErrors('Class '.$usedEntity.' was referenced relatively but not defined', $file, $lines);
+                $errorMessage = 'Class '.$usedEntity.' was referenced relatively but not defined';
             }
+            
+            $regexUsedEntity = str_replace('\\', '\\\\', $usedEntity);
+            if (preg_match('/\Wuse\s+(\\\?|[a-zA-Z0-9_\\\]+\\\\)'.$regexUsedEntity.';/', $fileContent)) {
+                continue;
+            }
+
+            if (preg_match('/\Wuse\s+\\\?[a-zA-Z0-9_\\\]+\sas\s'.$aliasName.';/', $fileContent)) {
+                continue;
+            }
+
+            $this->addMultipleErrors($errorMessage, $file, $lines);
         }
     }
 
