@@ -131,7 +131,7 @@ class NamespaceDependencyChecker
             }
             
             $regexUsedEntity = str_replace('\\', '\\\\', $usedEntity);
-            if (preg_match('/\Wuse\s+(\\\?|[a-zA-Z0-9_\\\]+\\\\)'.$regexUsedEntity.';/', $fileContent)) {
+            if (preg_match('/\Wuse\s+(?:\\\?|[a-zA-Z0-9_\\\]+\\\\)'.$regexUsedEntity.';/', $fileContent)) {
                 continue;
             }
 
