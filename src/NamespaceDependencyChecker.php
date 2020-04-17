@@ -78,6 +78,7 @@ class NamespaceDependencyChecker
         $entitiesUsedInFile = $this->classScanner->getUsedEntities($file);
 
         $fileNamespace = (string) new NamespaceString($this->namespaceVendor, $this->root, $file);
+        $fileNamespaceLength = strlen($fileNamespace) + 1;
         foreach ($entitiesUsedInFile as $usedEntity => $lines) {
             // we have a fully qualified name, so we do not need any use statements
             if (substr($usedEntity, 0, 1) === '\\') {
@@ -102,7 +103,7 @@ class NamespaceDependencyChecker
                         continue 2;
                     }
                     if (strpos($usedEntityNamespaceT, $fileNamespace) === 0) {
-                        $usedEntityNamespaceT = substr($usedEntityNamespaceT, strlen($fileNamespace) + 1);
+                        $usedEntityNamespaceT = substr($usedEntityNamespaceT, $fileNamespaceLength);
                         if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntityNamespaceT).';/', $fileContent)) {
                             continue 2;
                         }
@@ -123,13 +124,13 @@ class NamespaceDependencyChecker
                     if (preg_match('/\Wuse\s+\\\?'.str_replace('\\', '\\\\', $usedEntityNamespaceT).';/', $fileContent)) {
                         continue 2;
                     }
-                    
+
                 }
                 $errorMessage = 'Class '.$usedEntity.' (fully qualified: '.$usedEntityNamespace.'\\'.$simpleName.') was referenced relatively but has no matching use statement';
             } else {
                 $errorMessage = 'Class '.$usedEntity.' was referenced relatively but not defined';
             }
-            
+
             $regexUsedEntity = str_replace('\\', '\\\\', $usedEntity);
             if (preg_match('/\Wuse\s+(?:\\\?|[a-zA-Z0-9_\\\]+\\\\)'.$regexUsedEntity.';/', $fileContent)) {
                 continue;

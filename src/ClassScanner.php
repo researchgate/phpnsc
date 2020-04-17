@@ -10,10 +10,6 @@
 
 namespace rg\tools\phpnsc;
 
-use PhpParser\Error;
-use PhpParser\Node\Stmt\Namespace_;
-use PhpParser\ParserFactory;
-
 class ClassScanner
 {
     /**
@@ -55,31 +51,17 @@ class ClassScanner
      */
     public function parseFilesForClassesAndInterfaces($files, $root, $namespaceVendor)
     {
-        $parserFactory = new ParserFactory();
-        $parser = $parserFactory->create(ParserFactory::PREFER_PHP7);
-
         $progressbar = new Progressbar($this->output, count($files));
         foreach ($files as $file) {
             $namespace = (string) new NamespaceString($namespaceVendor, $root, $file);
             $originalFileContent = $this->filesystem->getFile($file);
 
-            try {
-                $stmts = $parser->parse($originalFileContent);
-                $firstStatement = $stmts[0];
-                if ($firstStatement instanceof Namespace_) {
-                    $namespaceOfFile = implode('\\', $firstStatement->name->parts);
-                    if ($namespace !== $namespaceOfFile) {
-                        $this->foundError = true;
-                        $this->output->addError('Namespace does not match folder structure, got '.$namespaceOfFile.' expected '.$namespace, $file, $firstStatement->getLine());
-                    }
+            if (preg_match('#^(?:<\\?php\s+)?namespace\s+([a-zA-Z0-9_\\\\]+?)(?:;|\s+\{?\W)$#sm', $originalFileContent, $matches)) {
+                $namespaceOfFile = $matches[1];
+                if ($namespace !== $namespaceOfFile) {
+                    $this->foundError = true;
+                    $this->output->addError('Namespace does not match folder structure, got '.$namespaceOfFile.' expected '.$namespace, $file, 2);
                 }
-            } catch (Error $e) {
-                $this->foundError = true;
-                $this->output->addError(
-                    'Parse Error: '.$e->getMessage(),
-                    $file,
-                    1
-                );
             }
             $fileContent = $this->cleanContent($originalFileContent);
             $this->parseDefinedEntities($file, $namespace, $fileContent, $originalFileContent);
@@ -113,10 +95,11 @@ class ClassScanner
             preg_match_all($pattern, $fileContent, $matches, PREG_OFFSET_CAPTURE);
             if (isset($matches[1])) {
                 foreach ($matches[1] as $match) {
+                    $matchLength = strlen($match[0]);
                     $fileContent =
                         substr($fileContent, 0, $match[1]).
-                        $getWhitespaces(strlen($match[0])).
-                        substr($fileContent, $match[1] + strlen($match[0]));
+                        $getWhitespaces($matchLength).
+                        substr($fileContent, $match[1] + $matchLength);
                 }
             }
 

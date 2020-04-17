@@ -51,6 +51,26 @@ class NamespaceDependencyCheckerTest extends TestCase
         $this->dependencyChecker->analyze($this->files);
         $expected = [
             [
+                'Namespace does not match folder structure, got vendor\testnamespaceTwo expected vendor\testnamespaceInvalid',
+                '/root/folder/testnamespaceInvalid/ClassX.php',
+                2,
+            ],
+            [
+                'Namespace does not match folder structure, got vendor\testnamespaceTwo expected vendor\testnamespaceInvalid',
+                '/root/folder/testnamespaceInvalid/ClassY.php',
+                2,
+            ],
+            [
+                'Namespace does not match folder structure, got vendor\testnamespaceTwo expected vendor\testnamespaceInvalid',
+                '/root/folder/testnamespaceInvalid/ClassZ.php',
+                2,
+            ],
+            [
+                'Namespace does not match folder structure, got vendor\testnamespaceTwo expected vendor\testnamespaceInvalid',
+                '/root/folder/testnamespaceInvalid/ClassZZ.php',
+                2,
+            ],
+            [
                 'Class TestException was referenced relatively but not defined',
                 '/root/folder/testnamespace/ClassOne.php',
                 15,
@@ -78,12 +98,18 @@ class NamespaceDependencyCheckerTest extends TestCase
 class DependencyCheckerOutputMock implements Output
 {
     public $errors = array();
+    public $warnings = array();
 
     public function __construct(OutputInterface $output, $parameter = null) {
 
     }
     public function addError($description, $file, $line) {
         $this->errors[] = array(
+            $description, $file, $line,
+        );
+    }
+    public function addWarning($description, $file, $line) {
+        $this->warnings[] = array(
             $description, $file, $line,
         );
     }
@@ -119,11 +145,11 @@ class ClassOne extends ClassTwo {
         } catch(TestException $e) {
         }
     }
-    
+
     private function testVoidAsReturnType(): void {
         // this declaration should work fine
     }
-    
+
     private function testVoidAsArgument(void $foo) {
         // this should not be allowed
     }
@@ -174,6 +200,66 @@ namespace vendor\testnamespaceThree;
 
 interface InterfaceB {
     public function test();
+}
+',
+'/root/folder/testnamespaceInvalid/ClassX.php' =>
+'<?php
+namespace vendor\testnamespaceTwo;
+
+class ClassX {
+    public function test() {}
+}
+',
+'/root/folder/testnamespaceInvalid/ClassY.php' =>
+'<?php
+namespace vendor\testnamespaceTwo {
+
+    class ClassY {
+        public function test() {}
+    }
+}
+',
+'/root/folder/testnamespaceInvalid/ClassZ.php' =>
+'<?php
+namespace vendor\testnamespaceTwo
+{
+    class ClassZ {
+        public function test() {}
+    }
+}
+',
+'/root/folder/testnamespaceInvalid/ClassZZ.php' =>
+'<?php namespace vendor\testnamespaceTwo
+{
+    class ClassZZ {
+        public function test() {}
+    }
+}
+',
+'/root/folder/testnamespaceValid/ClassX.php' =>
+'<?php
+namespace vendor\testnamespaceValid;
+
+class ClassX {
+    public function test() {}
+}
+',
+'/root/folder/testnamespaceValid/ClassY.php' =>
+'<?php
+namespace vendor\testnamespaceValid {
+
+    class ClassY {
+        public function test() {}
+    }
+}
+',
+'/root/folder/testnamespaceValid/ClassZ.php' =>
+'<?php
+namespace vendor\testnamespaceValid
+{
+    class ClassZ {
+        public function test() {}
+    }
 }
 ',
     );
