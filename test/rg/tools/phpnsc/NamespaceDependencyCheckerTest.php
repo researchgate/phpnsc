@@ -1,30 +1,17 @@
 <?php
-namespace rg\test\tools\phpnsc;
+namespace rg\tools\phpnsc;
 
 use PHPUnit\Framework\TestCase;
-use rg\tools\phpnsc\ClassScanner;
-use rg\tools\phpnsc\FilesystemAccess;
-use rg\tools\phpnsc\NamespaceDependencyChecker;
-use rg\tools\phpnsc\Output;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class NamespaceDependencyCheckerTest extends TestCase
 {
-    /**
-     * @var ClassModifierFilesystemMock
-     */
-    private $filesystem;
 
     /**
      * @var array
      */
     private $files;
-
-    /**
-     * @var ClassScanner
-     */
-    private $classScanner;
 
     /**
      * @var NamespaceDependencyChecker
@@ -36,15 +23,15 @@ class NamespaceDependencyCheckerTest extends TestCase
      */
     private $outputClass;
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         $output = new NullOutput();
         $this->outputClass = new DependencyCheckerOutputMock($output);
-        $this->filesystem = new ClassModifierFilesystemMock('/root/folder');
-        $this->files = array_keys($this->filesystem->filesystem);
-        $this->classScanner = new ClassScanner($this->filesystem, $this->outputClass);
-        $this->classScanner->parseFilesForClassesAndInterfaces($this->files, '/root/folder', 'vendor');
-        $this->dependencyChecker = new NamespaceDependencyChecker($this->filesystem, $this->classScanner, 'vendor', '/root/folder', $this->outputClass);
+        $filesystem = new ClassModifierFilesystemMock('/root/folder');
+        $this->files = array_keys($filesystem->filesystem);
+        $classScanner = new ClassScanner($filesystem, $this->outputClass);
+        $classScanner->parseFilesForClassesAndInterfaces($this->files, '/root/folder', 'vendor');
+        $this->dependencyChecker = new NamespaceDependencyChecker($filesystem, $classScanner, 'vendor', '/root/folder', $this->outputClass);
     }
 
     public function testModifyFiles() {

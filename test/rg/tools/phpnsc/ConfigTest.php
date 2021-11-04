@@ -1,26 +1,20 @@
 <?php
-namespace rg\test\tools\phpnsc;
+namespace rg\tools\phpnsc;
 
 use PHPUnit\Framework\TestCase;
-use rg\tools\phpnsc\Config;
-use rg\tools\phpnsc\FilesystemAccess;
 
 class ConfigTest extends TestCase
 {
-    /**
-     * @var FilesystemMock
-     */
-    private $filesystem;
 
     /**
      * @var Config
      */
     private $config;
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
-        $this->filesystem = new FilesystemMock('/root/folder');
-        $this->config = new Config($this->filesystem);
+        $filesystem = new FilesystemMock('/root/folder');
+        $this->config = new Config($filesystem);
     }
 
     public function testLoadConfig() {
@@ -36,7 +30,7 @@ class ConfigTest extends TestCase
 
 class FilesystemMock extends FilesystemAccess
 {
-    public function getFile($filename) {
+    public function getFile($filename): string {
         return '{
     "vendor" : "researchgate",
     "folders" : {

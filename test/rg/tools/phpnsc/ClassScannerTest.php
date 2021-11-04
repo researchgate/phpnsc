@@ -1,10 +1,7 @@
 <?php
-namespace rg\test\tools\phpnsc;
+namespace rg\tools\phpnsc;
 
 use PHPUnit\Framework\TestCase;
-use rg\tools\phpnsc\ClassScanner;
-use rg\tools\phpnsc\ConsoleOutput;
-use rg\tools\phpnsc\FilesystemAccess;
 use Symfony\Component\Console\Output\NullOutput;
 
 class ClassScannerTest extends TestCase
@@ -19,7 +16,7 @@ class ClassScannerTest extends TestCase
      */
     private $classScanner;
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         $output = new NullOutput();
         $outputClass = new ConsoleOutput($output);

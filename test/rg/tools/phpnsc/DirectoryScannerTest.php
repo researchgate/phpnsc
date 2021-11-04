@@ -1,32 +1,21 @@
 <?php
-namespace rg\test\tools\phpnsc;
+namespace rg\tools\phpnsc;
 
 use PHPUnit\Framework\TestCase;
-use rg\tools\phpnsc\DirectoryScanner;
-use rg\tools\phpnsc\FilesystemAccess;
 
 class DirectoryScannerTest extends TestCase
 {
-    /**
-     * @var FilesystemMock
-     */
-    private $filesystem;
 
     /**
      * @var DirectoryScanner
      */
     private $directoryScanner;
 
-    /**
-     * @var string
-     */
-    private $root;
-
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
-        $this->filesystem = new DirectoryScannerFilesystemMock('/root/folder');
-        $this->root = '/root/folder';
-        $this->directoryScanner = new DirectoryScanner($this->filesystem, $this->root, '/');
+        $filesystem = new DirectoryScannerFilesystemMock('/root/folder');
+        $root = '/root/folder';
+        $this->directoryScanner = new DirectoryScanner($filesystem, $root, '/');
     }
 
     public function testReadDirectory() {
@@ -103,11 +92,11 @@ class DirectoryScannerFilesystemMock extends FilesystemAccess
         return isset($this->filesystem[$directory]) ? $handle : false;
     }
 
-    public function closeDirectory($handle) {
+    public function closeDirectory($handle): bool {
         return true;
     }
 
-    public function isDir($path) {
+    public function isDir($path): bool {
         return isset($this->filesystem[$path]);
     }
 
