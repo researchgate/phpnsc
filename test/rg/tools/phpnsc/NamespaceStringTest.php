@@ -1,10 +1,10 @@
 <?php
-namespace rg\test\tools\phpnsc;
+namespace rg\tools\phpnsc;
 
 use PHPUnit\Framework\TestCase;
-use rg\tools\phpnsc\NamespaceString;
 
 class NamespaceStringTest extends TestCase {
+
     public function testCreateNamespaceString() {
         $namespaceVendor = 'vendor';
         $root = '/root/folder';

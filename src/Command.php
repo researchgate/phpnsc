@@ -10,7 +10,7 @@
 
 namespace rg\tools\phpnsc;
 
-use SebastianBergmann\Timer\Timer;
+use SebastianBergmann\Timer\ResourceUsageFormatter;
 use Symfony\Component\Console;
 use Symfony\Component\Console\Application;
 
@@ -99,7 +99,7 @@ class Command extends Console\Command\Command
         }
 
         $outputClass->printAll();
-        $outputClass->writeln(Timer::resourceUsage());
+        $outputClass->writeln((new ResourceUsageFormatter())->resourceUsageSinceStartOfRequest());
 
         return $foundError ? 1 : 0;
     }
