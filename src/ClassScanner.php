@@ -177,7 +177,7 @@ class ClassScanner
         // Extends
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\sextends\s+([a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, $reservedClassKeywords);
         // static call
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\W([\$a-zA-Z0-9_\\\]+)::/i', $this->usedEntities, $reservedClassKeywords);
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/[^a-zA-Z0-9_\$]([a-zA-Z0-9_\\\]+)::/i', $this->usedEntities, $reservedClassKeywords);
         // Typehints
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/[\,\(]\s*([a-zA-Z0-9_\\\]+)\s+\$[a-zA-Z0-9_]+/i', $this->usedEntities, $reservedClassKeywords);
 
