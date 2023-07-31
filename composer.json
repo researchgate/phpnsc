@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "php": ">=8.0",
+        "php": ">=7.4",
         "symfony/console" : "4.0|^5.0",
         "phpunit/php-timer": "^5.0"
     },
