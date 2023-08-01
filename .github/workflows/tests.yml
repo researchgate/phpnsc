@@ -33,10 +33,9 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install dependencies
-        uses: php-actions/composer@v6
+        uses: ramsey/composer-install@v2
         with:
-          version: 2
-          php_version: ${{ matrix.php-versions }}
+          dependency-versions: ${{ matrix.php-versions }}
 
       - name: Run test suite
         run: vendor/bin/phpunit
