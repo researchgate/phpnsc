@@ -35,7 +35,6 @@ jobs:
       - name: Install dependencies
         uses: ramsey/composer-install@v2
         with:
-          version: 2
           dependency-versions: ${{ matrix.php-versions }}
 
       - name: Run test suite
