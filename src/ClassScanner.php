@@ -42,8 +42,7 @@ class ClassScanner
     }
 
     /**
-     * parses all given files for classes and interfaces that are defined or used in this
-     * files.
+     * parses all given files for classes and interfaces that are defined or used in these files.
      *
      * @param array $files
      * @param string $root
@@ -80,7 +79,7 @@ class ClassScanner
     {
         $fileContent = str_replace('\\\'', '  ', $fileContent);
         $fileContent = str_replace('\\"', '  ', $fileContent);
-        $fileContent = preg_replace("/([a-zA-Z])\'([a-zA-Z])/", '$1$2', $fileContent);
+        $fileContent = preg_replace("/([a-zA-Z])'([a-zA-Z])/", '$1$2', $fileContent);
         $getWhitespaces = function ($count) {
             $s = '';
             for ($i = 0; $i < $count; ++$i) {
@@ -114,15 +113,6 @@ class ClassScanner
         $fileContent = $cleanWithWhitespaces("/(\/\/.*)/", $fileContent);
         $fileContent = $cleanWithWhitespaces('/(<<<(?P<tag>_[A-Za-z]+).*(?P=tag);)/sU', $fileContent);
         $fileContent = $cleanWithWhitespaces('/(<<<(?P<tag>[A-Za-z_]+).*(?P=tag);)/sU', $fileContent);
-
-        if (false) {
-            $fileContent = preg_replace("/(\/\*.*\*\/)/sU", '', $fileContent);
-            $fileContent = preg_replace("/(\?>.*<\?)/sU", '', $fileContent);
-            $fileContent = preg_replace("/(\?>.*$)/sU", '', $fileContent);
-            $fileContent = preg_replace("/(\'.*\')/sU", '', $fileContent);
-            $fileContent = preg_replace('/(".*")/sU', '', $fileContent);
-            $fileContent = preg_replace("/(\/\/.*)/", '', $fileContent);
-        }
 
         return $fileContent;
     }
@@ -177,9 +167,9 @@ class ClassScanner
         // Extends
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\sextends\s+([a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, $reservedClassKeywords);
         // static call
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\W([\$a-zA-Z0-9_\\\]+)::/i', $this->usedEntities, $reservedClassKeywords);
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\W([$a-zA-Z0-9_\\\]+)::/i', $this->usedEntities, $reservedClassKeywords);
         // Typehints
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/[\,\(]\s*([a-zA-Z0-9_\\\]+)\s+\$[a-zA-Z0-9_]+/i', $this->usedEntities, $reservedClassKeywords);
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/[,(]\s*([a-zA-Z0-9_\\\]+)\s+\$[a-zA-Z0-9_]+/i', $this->usedEntities, $reservedClassKeywords);
 
         // Return Typehints
         $this->parseFileWithRegexForUsedEntities(
@@ -251,6 +241,7 @@ class ClassScanner
     {
         $this->parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, '/^\s*(abstract\s+|final\s+)?class\s+([a-zA-Z0-9_]+)\W/mi', $this->definedEntities, 2);
         $this->parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, '/^\s*interface\s+([a-zA-Z0-9_]+)\W/mi', $this->definedEntities);
+        $this->parseFileWithRegexForDefinedEntities($file, $namespace, $fileContent, $originalFileContent, '/^\s*enum\s+([a-zA-Z0-9_]+)\W/mi', $this->definedEntities);
     }
 
     public function parseUseStatements($file, $namespace, $fileContent, $originalFileContent)

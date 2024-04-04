@@ -54,6 +54,11 @@ interface   InterfaceTwo
 <?php
 interface InterfaceOne
 ',
+'/root/folder/namespace/EnumOne.php' => '
+<?php
+enum EnumOne
+{}
+',
         );
         $files = array_keys($this->filesystem->filesystem);
 
@@ -73,6 +78,9 @@ interface InterfaceOne
                 'namespaces' => array('vendor\namespace'),
             ),
             'InterfaceTwo' => array(
+                'namespaces' => array('vendor\namespace'),
+            ),
+            'EnumOne' => array(
                 'namespaces' => array('vendor\namespace'),
             ),
         );
