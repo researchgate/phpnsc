@@ -31,7 +31,7 @@ class Command extends Console\Command\Command
         $application->run();
     }
 
-    protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output)
+    protected function execute(Console\Input\InputInterface $input, Console\Output\OutputInterface $output): int
     {
         $configFile = $input->getArgument('config');
         if (!$configFile) {
