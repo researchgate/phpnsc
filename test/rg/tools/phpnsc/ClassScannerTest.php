@@ -226,6 +226,55 @@ function foo(ClassFour $bar) : ClassFive {}
             $this->assertEquals($expectedEntities[$file], $this->classScanner->getUsedEntities($file));
         }
     }
+
+    public function testParseUsedEntitiesIgnoresReservedKeywords() {
+        $file = '/root/folder/namespace/ModernPhp.php';
+        $this->filesystem->filesystem = [
+            $file => '<?php
+class ModernPhp
+{
+    public function __construct(
+        private $a,
+        protected $b,
+        public $c,
+        private readonly $d,
+        RealParamClass $e
+    ) {
+        $anon = new readonly class {};
+        $isSelf = $anon instanceof self;
+        $isStatic = $anon instanceof static;
+        $isParent = $anon instanceof parent;
+        $isReal = $anon instanceof RealInstanceofClass;
+        $matched = match ($a) {
+            1 => fn ($x) => $x,
+            default => null,
+        };
+        enum::class;
+    }
+
+    public function fail(): never
+    {
+        throw new RealException();
+    }
+
+    public function nothing(): void
+    {
+    }
+}
+',
+        ];
+        $files = array_keys($this->filesystem->filesystem);
+
+        $this->classScanner->parseFilesForClassesAndInterfaces($files, '/root/folder', 'vendor');
+
+        $expectedEntities = [
+            'RealParamClass' => [9],
+            'RealInstanceofClass' => [15],
+            'RealException' => [25],
+        ];
+
+        $this->assertEquals($expectedEntities, $this->classScanner->getUsedEntities($file));
+    }
 }
 
 class ClassScannerFilesystemMock extends FilesystemAccess
