@@ -185,7 +185,7 @@ class ClassScanner
         // Extends
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\sextends\s+([a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, self::RESERVED_CLASS_KEYWORDS);
         // static call
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\W([$a-zA-Z0-9_\\\]+)::/i', $this->usedEntities, self::RESERVED_CLASS_KEYWORDS);
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\W(?<!->)([$a-zA-Z0-9_\\\]+)::/i', $this->usedEntities, self::RESERVED_CLASS_KEYWORDS);
         // Typehints
         $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/[,(]\s*([a-zA-Z0-9_\\\]+)\s+\$[a-zA-Z0-9_]+/i', $this->usedEntities, self::RESERVED_CLASS_KEYWORDS);
 
@@ -223,6 +223,9 @@ class ClassScanner
         $matches = [];
         preg_match_all($regex, $fileContent, $matches, PREG_OFFSET_CAPTURE);
         $checkAndAddMatch = function ($match, $line) use (&$targetArray, $file, $reservedKeywords) {
+            if (substr($match, 0, 1) === '$') {
+                return;
+            }
             if (!in_array(strtolower($match), $reservedKeywords, true)) {
                 if (!isset($targetArray[$file][$match])) {
                     $targetArray[$file][$match] = [];

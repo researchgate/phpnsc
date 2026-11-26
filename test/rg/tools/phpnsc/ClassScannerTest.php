@@ -275,6 +275,35 @@ class ModernPhp
 
         $this->assertEquals($expectedEntities, $this->classScanner->getUsedEntities($file));
     }
+
+    public function testParseUsedEntitiesIgnoresClassConstantOnVariablesAndProperties() {
+        $file = '/root/folder/namespace/DynamicClassAccess.php';
+        $this->filesystem->filesystem = [
+            $file => '<?php
+class DynamicClassAccess
+{
+    public function test($foo, $task)
+    {
+        $a = $foo->task::class;
+        $b = $foo?->task::class;
+        $c = $task::class;
+        $d = RealClass::class;
+        $e = \FullyQualifiedClass::class;
+    }
+}
+',
+        ];
+        $files = array_keys($this->filesystem->filesystem);
+
+        $this->classScanner->parseFilesForClassesAndInterfaces($files, '/root/folder', 'vendor');
+
+        $expectedEntities = [
+            'RealClass' => [9],
+            '\FullyQualifiedClass' => [10],
+        ];
+
+        $this->assertEquals($expectedEntities, $this->classScanner->getUsedEntities($file));
+    }
 }
 
 class ClassScannerFilesystemMock extends FilesystemAccess
