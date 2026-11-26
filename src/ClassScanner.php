@@ -12,6 +12,31 @@ namespace rg\tools\phpnsc;
 
 class ClassScanner
 {
+    private const RESERVED_CLASS_KEYWORDS = [
+        // Core reserved keywords
+        '__halt_compiler', 'abstract', 'and', 'array', 'as', 'break', 'callable',
+        'case', 'catch', 'class', 'clone', 'const', 'continue', 'declare',
+        'default', 'die', 'do', 'echo', 'else', 'elseif', 'empty', 'enddeclare',
+        'endfor', 'endforeach', 'endif', 'endswitch', 'endwhile', 'enum', 'eval',
+        'exit', 'extends', 'final', 'finally', 'fn', 'for', 'foreach', 'function',
+        'global', 'goto', 'if', 'implements', 'include', 'include_once',
+        'instanceof', 'insteadof', 'interface', 'isset', 'list', 'match',
+        'namespace', 'new', 'or', 'print', 'private', 'protected', 'public',
+        'readonly', 'require', 'require_once', 'return', 'static', 'switch',
+        'throw', 'trait', 'try', 'unset', 'use', 'var', 'while', 'xor', 'yield',
+        // Compile-time magic constants
+        '__class__', '__dir__', '__file__', '__function__', '__line__',
+        '__method__', '__namespace__', '__property__', '__trait__',
+        // Type & relative class keywords
+        'bool', 'false', 'float', 'int', 'iterable', 'mixed', 'null',
+        'numeric', 'object', 'parent', 'resource', 'self', 'string', 'true',
+    ];
+
+    private const RESERVED_RETURN_TYPES = [
+        'never',
+        'void',
+    ];
+
     /**
      * @var FilesystemAccess
      */
@@ -155,21 +180,14 @@ class ClassScanner
 
     public function parseUsedEntities($file, $namespace, $fileContent, $originalFileContent)
     {
-        $reservedClassKeywords = [
-            'class', 'parent', 'self', '__class__', 'static', 'array', 'new', 'clone',
-            'callable', 'string', 'int', 'float', 'bool', 'resource', 'false', 'true',
-            'null', 'numeric', 'mixed', 'object', 'iterable', 'yield'
-        ];
-        $reservedReturnTypes = array_merge($reservedClassKeywords, ['void']);
-
         // new operator
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\Wnew\s+([a-zA-Z0-9_\\\]+)/i', $this->usedEntities, $reservedClassKeywords);
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\Wnew\s+([a-zA-Z0-9_\\\]+)/i', $this->usedEntities, self::RESERVED_CLASS_KEYWORDS);
         // Extends
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\sextends\s+([a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, $reservedClassKeywords);
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\sextends\s+([a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, self::RESERVED_CLASS_KEYWORDS);
         // static call
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\W([$a-zA-Z0-9_\\\]+)::/i', $this->usedEntities, $reservedClassKeywords);
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\W([$a-zA-Z0-9_\\\]+)::/i', $this->usedEntities, self::RESERVED_CLASS_KEYWORDS);
         // Typehints
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/[,(]\s*([a-zA-Z0-9_\\\]+)\s+\$[a-zA-Z0-9_]+/i', $this->usedEntities, $reservedClassKeywords);
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/[,(]\s*([a-zA-Z0-9_\\\]+)\s+\$[a-zA-Z0-9_]+/i', $this->usedEntities, self::RESERVED_CLASS_KEYWORDS);
 
         // Return Typehints
         $this->parseFileWithRegexForUsedEntities(
@@ -179,13 +197,13 @@ class ClassScanner
             $originalFileContent,
             '/\)\s*:\s*([a-zA-Z0-9_\\\]+)\s*\{/i',
             $this->usedEntities,
-            $reservedReturnTypes
+            array_merge(self::RESERVED_CLASS_KEYWORDS, self::RESERVED_RETURN_TYPES)
         );
 
         // implements
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\simplements\s+([\s,a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, [], 1, ',');
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\simplements\s+([\s,a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, self::RESERVED_CLASS_KEYWORDS, 1, ',');
         // Instanceof
-        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\sinstanceof\s+([a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities);
+        $this->parseFileWithRegexForUsedEntities($file, $namespace, $fileContent, $originalFileContent, '/\sinstanceof\s+([a-zA-Z0-9_\\\]+)\W/i', $this->usedEntities, self::RESERVED_CLASS_KEYWORDS);
     }
 
     private function parseFileWithRegexForUsedEntities(
@@ -205,7 +223,7 @@ class ClassScanner
         $matches = [];
         preg_match_all($regex, $fileContent, $matches, PREG_OFFSET_CAPTURE);
         $checkAndAddMatch = function ($match, $line) use (&$targetArray, $file, $reservedKeywords) {
-            if (!in_array(strtolower($match), $reservedKeywords)) {
+            if (!in_array(strtolower($match), $reservedKeywords, true)) {
                 if (!isset($targetArray[$file][$match])) {
                     $targetArray[$file][$match] = [];
                 }
